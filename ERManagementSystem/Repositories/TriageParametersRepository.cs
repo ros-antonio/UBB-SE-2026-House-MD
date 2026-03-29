@@ -65,5 +65,20 @@ namespace ERManagementSystem.Repositories
 
             return null;
         }
+
+        public void Delete(Triage_Parameters parameters)
+        {
+            if (parameters == null || parameters.Triage_ID <= 0)
+                throw new ArgumentException("Invalid Triage_Parameters object.");
+
+            string sql = "DELETE FROM Triage_Parameters WHERE Triage_ID = @Triage_ID";
+
+            var sqlParams = new SqlParameter[]
+            {
+                new SqlParameter("@Triage_ID", parameters.Triage_ID)
+            };
+
+            _sqlHelper.ExecuteNonQuery(sql, sqlParams);
+        }
     }
 }
