@@ -18,9 +18,7 @@ namespace ERManagementSystem.ViewModels
             _registrationService = registrationService;
         }
 
-        // ─────────────────────────────────────────────
-        // Bindable Properties
-        // ─────────────────────────────────────────────
+   
 
         [ObservableProperty]
         private string patientId = string.Empty;
@@ -49,9 +47,7 @@ namespace ERManagementSystem.ViewModels
         [ObservableProperty]
         private string chiefComplaint = string.Empty;
 
-        // ─────────────────────────────────────────────
-        // Inline Error Messages
-        // ─────────────────────────────────────────────
+
 
         [ObservableProperty]
         private string patientIdError = string.Empty;
@@ -74,15 +70,10 @@ namespace ERManagementSystem.ViewModels
         [ObservableProperty]
         private string chiefComplaintError = string.Empty;
 
-        // ─────────────────────────────────────────────
-        // Submit attempted flag
-        // ─────────────────────────────────────────────
 
         private bool _submitAttempted = false;
 
-        // ─────────────────────────────────────────────
-        // OnPropertyChanged hooks
-        // ─────────────────────────────────────────────
+    
 
         partial void OnPatientIdChanged(string value) => ValidateAll();
         partial void OnFirstNameChanged(string value) => ValidateAll();
@@ -93,9 +84,7 @@ namespace ERManagementSystem.ViewModels
         partial void OnEmergencyContactChanged(string value) => ValidateAll();
         partial void OnChiefComplaintChanged(string value) => ValidateAll();
 
-        // ─────────────────────────────────────────────
-        // Validation
-        // ─────────────────────────────────────────────
+   
 
         private bool ValidateAll()
         {
@@ -161,12 +150,7 @@ namespace ERManagementSystem.ViewModels
             else
                 PhoneError = string.Empty;
 
-            // Emergency Contact — format: "Firstname Lastname - 07XXXXXXXX"
-            // Examples: "Mihai Ionescu - 0759213467"
-            //           "Ana Maria Pop - 0721000000"
-            // Rule: one or more words (letters/hyphens) for the name,
-            //       a space-dash-space separator,
-            //       then a Romanian phone number (07XXXXXXXX).
+          
             if (string.IsNullOrWhiteSpace(EmergencyContact))
             {
                 if (_submitAttempted) EmergencyContactError = "Emergency contact is required.";
@@ -194,16 +178,11 @@ namespace ERManagementSystem.ViewModels
             return valid;
         }
 
-        // ─────────────────────────────────────────────
-        // XamlRoot helper
-        // ─────────────────────────────────────────────
 
         private Microsoft.UI.Xaml.XamlRoot? GetXamlRoot()
             => App.MainAppWindow?.Content?.XamlRoot;
 
-        // ─────────────────────────────────────────────
-        // Commands
-        // ─────────────────────────────────────────────
+
 
         [RelayCommand]
         private async Task RegisterPatientAndVisit()
