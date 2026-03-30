@@ -1,4 +1,4 @@
-﻿using ERManagementSystem.Models;
+using ERManagementSystem.Models;
 using ERManagementSystem.Repositories;
 using System;
 using System.Collections.Generic;
@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace ERManagementSystem.Services
 {
-    internal class TriageService
+    public class TriageService
     {
         private readonly TriageRepository _triageRepository;
         private readonly TriageParametersRepository _triageParametersRepository;
@@ -85,6 +85,11 @@ namespace ERManagementSystem.Services
 
 
             return triage;
+        }
+
+        public Triage? GetByVisitId(int visitId)
+        {
+            return _triageRepository.GetByVisitId(visitId);
         }
 
         /// <summary>
@@ -169,4 +174,6 @@ namespace ERManagementSystem.Services
         }
 
     }
+
+
 }

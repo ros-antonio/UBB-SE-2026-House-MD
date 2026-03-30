@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using ERManagementSystem.Models;
@@ -7,7 +7,7 @@ using Microsoft.Data.SqlClient;
 
 namespace ERManagementSystem.Services
 {
-    internal class QueueService
+    public class QueueService
     {
         private readonly ERVisitRepository _visitRepository;
         private readonly StateManagementService _stateService;
@@ -19,29 +19,12 @@ namespace ERManagementSystem.Services
         }
 
         /// <summary>
-        /// Moves all visits with status "TRIAGED" to "WAITING_FOR_ROOM".
-        /// </summary>
-        public void MoveTriagedToWaitingForRoom(List<(ER_Visit visit, Triage triage)> queue)
-        {
-            foreach (var (visit, triage) in queue)
-            {
-                if (visit.Status == "TRIAGED")
-                {
-                    _stateService.ChangeVisitStatus(visit.Visit_ID, "WAITING_FOR_ROOM");
-                    visit.Status = "WAITING_FOR_ROOM";
-                }
-            }
-        }
-
-        /// <summary>
         /// Fetches all active visits with their triage data and orders them.
         /// </summary>
         public List<(ER_Visit visit, Triage triage)> GetOrderedQueue()
         {
            
             var queueWithTriage = _visitRepository.GetActiveVisitsWithTriage();
-
-            MoveTriagedToWaitingForRoom(queueWithTriage);
             
             return OrderByTriageLevelAndArrivalTime(queueWithTriage);
         }
