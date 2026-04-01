@@ -54,7 +54,7 @@ namespace ERManagementSystem.Views
                     mockStaffService,
                     stateManagementService);
 
-                ViewModel = new ExaminationViewModel(examinationService, mockStaffService, sqlHelper);
+                ViewModel = new ExaminationViewModel(examinationService, mockStaffService, erVisitRepository, examRepository, triageRepository);
             }
 
             // Re-evaluate all x:Bind bindings now that ViewModel is set.

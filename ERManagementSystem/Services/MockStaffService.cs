@@ -21,6 +21,8 @@ namespace ERManagementSystem.Services
                 "Cardiology" => 101,
                 "Orthopedics" => 102,
                 "Neurology" => 103,
+                "Pulmonology" => 105,
+                "Emergency Medicine" => 106,
                 "General" => 104,
                 _ => 104 // Default to General practitioner
             };
@@ -36,6 +38,8 @@ namespace ERManagementSystem.Services
                 102 => new Doctor { DoctorID = 102, Name = "Dr. Johnson", Specialty = "Orthopedics" },
                 103 => new Doctor { DoctorID = 103, Name = "Dr. Williams", Specialty = "Neurology" },
                 104 => new Doctor { DoctorID = 104, Name = "Dr. Brown", Specialty = "General Medicine" },
+                105 => new Doctor { DoctorID = 105, Name = "Dr. Taylor", Specialty = "Pulmonology" },
+                106 => new Doctor { DoctorID = 106, Name = "Dr. Evans", Specialty = "Emergency Medicine" },
                 _ => new Doctor { DoctorID = 0, Name = "Unknown", Specialty = "Unknown" }
             };
         }

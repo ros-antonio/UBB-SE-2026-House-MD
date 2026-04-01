@@ -22,7 +22,7 @@
             <Border Style="{StaticResource CardBorderStyle}">
                 <StackPanel Spacing="12">
                     <TextBlock
-                        Text="Visits  (Status: IN_ROOM / WAITING_FOR_DOCTOR)"
+                        Text="Visits  (IN_ROOM / WAITING_FOR_DOCTOR)"
                         Style="{StaticResource SectionTitleTextBlockStyle}"/>
 
                     <controls:DataGrid
@@ -80,12 +80,85 @@
                             <TextBlock Text="{x:Bind ViewModel.DoctorSpecialty, Mode=OneWay}"
                                        FontSize="16" FontWeight="SemiBold"/>
                         </StackPanel>
-                        <StackPanel>
-                            <TextBlock Text="Requested Specialization"
+                    </StackPanel>
+                </StackPanel>
+            </Border>
+
+            <!-- TRIAGE DETAILS CARD (read-only) — Task 4.14 -->
+            <Border Style="{StaticResource CardBorderStyle}">
+                <StackPanel Spacing="8">
+                    <TextBlock
+                        Text="Triage Details"
+                        Style="{StaticResource SectionTitleTextBlockStyle}"/>
+
+                    <!-- Row 1: Level, Specialization, Severity Score, Nurse -->
+                    <StackPanel Orientation="Horizontal" Spacing="24">
+                        <StackPanel MinWidth="100">
+                            <TextBlock Text="Triage Level"
                                        Foreground="{ThemeResource SystemControlForegroundBaseMediumBrush}"
                                        FontSize="12"/>
-                            <TextBlock Text="{x:Bind ViewModel.RequestSpecialization, Mode=OneWay}"
+                            <TextBlock Text="{x:Bind ViewModel.TriageLevelDisplay, Mode=OneWay}"
                                        FontSize="16" FontWeight="SemiBold"/>
+                        </StackPanel>
+                        <StackPanel MinWidth="140">
+                            <TextBlock Text="Specialization"
+                                       Foreground="{ThemeResource SystemControlForegroundBaseMediumBrush}"
+                                       FontSize="12"/>
+                            <TextBlock Text="{x:Bind ViewModel.TriageSpecialization, Mode=OneWay}"
+                                       FontSize="16" FontWeight="SemiBold"/>
+                        </StackPanel>
+                        <StackPanel MinWidth="100">
+                            <TextBlock Text="Severity Score"
+                                       Foreground="{ThemeResource SystemControlForegroundBaseMediumBrush}"
+                                       FontSize="12"/>
+                            <TextBlock Text="{x:Bind ViewModel.SeverityScoreDisplay, Mode=OneWay}"
+                                       FontSize="16" FontWeight="SemiBold"/>
+                        </StackPanel>
+                        <StackPanel MinWidth="100">
+                            <TextBlock Text="Assigned Nurse"
+                                       Foreground="{ThemeResource SystemControlForegroundBaseMediumBrush}"
+                                       FontSize="12"/>
+                            <TextBlock Text="{x:Bind ViewModel.TriageNurseId, Mode=OneWay}"
+                                       FontSize="16" FontWeight="SemiBold"/>
+                        </StackPanel>
+                    </StackPanel>
+
+                    <!-- Row 2: 5 Triage Parameters -->
+                    <StackPanel Orientation="Horizontal" Spacing="24" Margin="0,8,0,0">
+                        <StackPanel MinWidth="120">
+                            <TextBlock Text="Consciousness"
+                                       Foreground="{ThemeResource SystemControlForegroundBaseMediumBrush}"
+                                       FontSize="12"/>
+                            <TextBlock Text="{x:Bind ViewModel.ConsciousnessDisplay, Mode=OneWay}"
+                                       FontSize="14"/>
+                        </StackPanel>
+                        <StackPanel MinWidth="120">
+                            <TextBlock Text="Breathing"
+                                       Foreground="{ThemeResource SystemControlForegroundBaseMediumBrush}"
+                                       FontSize="12"/>
+                            <TextBlock Text="{x:Bind ViewModel.BreathingDisplay, Mode=OneWay}"
+                                       FontSize="14"/>
+                        </StackPanel>
+                        <StackPanel MinWidth="100">
+                            <TextBlock Text="Bleeding"
+                                       Foreground="{ThemeResource SystemControlForegroundBaseMediumBrush}"
+                                       FontSize="12"/>
+                            <TextBlock Text="{x:Bind ViewModel.BleedingDisplay, Mode=OneWay}"
+                                       FontSize="14"/>
+                        </StackPanel>
+                        <StackPanel MinWidth="100">
+                            <TextBlock Text="Injury Type"
+                                       Foreground="{ThemeResource SystemControlForegroundBaseMediumBrush}"
+                                       FontSize="12"/>
+                            <TextBlock Text="{x:Bind ViewModel.InjuryTypeDisplay, Mode=OneWay}"
+                                       FontSize="14"/>
+                        </StackPanel>
+                        <StackPanel MinWidth="100">
+                            <TextBlock Text="Pain Level"
+                                       Foreground="{ThemeResource SystemControlForegroundBaseMediumBrush}"
+                                       FontSize="12"/>
+                            <TextBlock Text="{x:Bind ViewModel.PainLevelDisplay, Mode=OneWay}"
+                                       FontSize="14"/>
                         </StackPanel>
                     </StackPanel>
                 </StackPanel>
@@ -94,9 +167,18 @@
             <!-- NOTES -->
             <Border Style="{StaticResource CardBorderStyle}">
                 <StackPanel Spacing="8">
-                    <TextBlock
-                        Text="Examination Notes"
-                        Style="{StaticResource SectionTitleTextBlockStyle}"/>
+                    <Grid>
+                        <TextBlock
+                            Text="Examination Notes"
+                            Style="{StaticResource SectionTitleTextBlockStyle}"
+                            HorizontalAlignment="Left"/>
+                        <TextBlock
+                            Text="{x:Bind ViewModel.SavedTimeDisplay, Mode=OneWay}"
+                            Foreground="MediumSeaGreen"
+                            FontWeight="SemiBold"
+                            HorizontalAlignment="Right"
+                            VerticalAlignment="Center"/>
+                    </Grid>
 
                     <TextBox
                         x:Name="NotesTextBox"
@@ -109,14 +191,44 @@
                 </StackPanel>
             </Border>
 
+            <!-- TASK 4.10: PAST EXAMINATIONS -->
+            <Border Style="{StaticResource CardBorderStyle}">
+                <StackPanel Spacing="8">
+                    <TextBlock
+                        Text="Past Examinations"
+                        Style="{StaticResource SectionTitleTextBlockStyle}"/>
+                    <controls:DataGrid
+                        ItemsSource="{x:Bind ViewModel.ExaminationHistory, Mode=OneWay}"
+                        AutoGenerateColumns="False"
+                        IsReadOnly="True"
+                        GridLinesVisibility="Horizontal"
+                        SelectionMode="Single"
+                        MinHeight="100" MaxHeight="200"
+                        HeadersVisibility="Column"
+                        Margin="0,8,0,0">
+                        <controls:DataGrid.Columns>
+                            <controls:DataGridTextColumn Header="Exam ID" Binding="{Binding Exam_ID}" />
+                            <controls:DataGridTextColumn Header="Date &amp; Time" Binding="{Binding Exam_Time}" />
+                            <controls:DataGridTextColumn Header="Doctor ID" Binding="{Binding Doctor_ID}" />
+                            <controls:DataGridTextColumn Header="Room" Binding="{Binding Room_ID}" />
+                            <controls:DataGridTextColumn Header="Notes" Binding="{Binding Notes}" Width="*" />
+                        </controls:DataGrid.Columns>
+                    </controls:DataGrid>
+                </StackPanel>
+            </Border>
+
             <!-- BUTTONS -->
-            <StackPanel Orientation="Horizontal">
+            <StackPanel Orientation="Horizontal" Spacing="8">
                 <Button Content="Request Doctor"
                         Command="{x:Bind ViewModel.RequestDoctorCommand}"
                         Style="{StaticResource PrimaryButtonStyle}"/>
                 <Button Content="Save Examination"
                         Command="{x:Bind ViewModel.SaveExaminationCommand}"
-                        Background="{StaticResource SuccessBrush}"
+                        Background="MediumSeaGreen"
+                        Foreground="White"/>
+                <Button Content="View Summary"
+                        Command="{x:Bind ViewModel.ViewSummaryCommand}"
+                        Background="SteelBlue"
                         Foreground="White"/>
                 <Button Content="Refresh"
                         Command="{x:Bind ViewModel.LoadDataCommand}"/>
