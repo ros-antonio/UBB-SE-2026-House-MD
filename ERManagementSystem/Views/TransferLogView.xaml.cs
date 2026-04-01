@@ -1,8 +1,12 @@
-using ERManagementSystem.ViewModels;
 using ERManagementSystem.Repositories;
 using ERManagementSystem.Services;
+using ERManagementSystem.ViewModels;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Navigation;
+using System;
+using System.IO;
 
 namespace ERManagementSystem.Views
 {
@@ -29,9 +33,7 @@ namespace ERManagementSystem.Views
             {
                 var dbConnection = new DataAccess.DatabaseConnection();
                 var sqlHelper = new Helpers.SqlHelper(dbConnection);
-                var transferDir = System.IO.Path.Combine(
-                    System.Environment.GetFolderPath(
-                        System.Environment.SpecialFolder.MyDocuments), "ERTransfers");
+                var transferDir = Path.Combine(AppContext.BaseDirectory, "transfers");
 
                 var erVisitRepo = new ERVisitRepository(sqlHelper);
                 var stateSvc = new StateManagementService(erVisitRepo);
