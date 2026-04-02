@@ -43,6 +43,7 @@ namespace ERManagementSystem.Views
                 var examRepository = new ExaminationRepository(sqlHelper);
                 var erVisitRepository = new ERVisitRepository(sqlHelper);
                 var triageRepository = new TriageRepository(sqlHelper);
+                var triageParamsRepo = new TriageParametersRepository(sqlHelper);
 
                 // Services
                 var stateManagementService = new StateManagementService(erVisitRepository);
@@ -52,9 +53,16 @@ namespace ERManagementSystem.Views
                     erVisitRepository,
                     triageRepository,
                     mockStaffService,
-                    stateManagementService);
+                    stateManagementService,
+                    triageParamsRepo);
 
-                ViewModel = new ExaminationViewModel(examinationService, mockStaffService, erVisitRepository, examRepository, triageRepository);
+                ViewModel = new ExaminationViewModel(
+                    examinationService, 
+                    mockStaffService, 
+                    erVisitRepository, 
+                    examRepository, 
+                    triageRepository,
+                    triageParamsRepo);
             }
 
             // Re-evaluate all x:Bind bindings now that ViewModel is set.
