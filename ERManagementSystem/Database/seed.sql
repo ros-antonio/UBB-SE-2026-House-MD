@@ -1,4 +1,4 @@
-﻿-- ============================================
+-- ============================================
 -- ER Management System - seed.sql
 -- Sample data for local SQL Server
 -- ============================================
@@ -78,7 +78,7 @@ VALUES
     ('6020205123467', '2026-03-27 07:50:00', 'Allergic reaction',          'IN_EXAMINATION'),
     ('1980315123478', '2026-03-27 08:10:00', 'Back pain',                  'REGISTERED'),
     ('2990412123489', '2026-03-27 08:30:00', 'Seizure episode',            'WAITING_FOR_ROOM'),
-    ('2950823123523', '2026-03-27 08:45:00', 'Ankle sprain',               'TRIAGED');
+    ('2950823123523', '2026-03-27 08:45:00', 'Ankle sprain',               'IN_ROOM');
 GO
 
 -- ============================================
@@ -107,7 +107,7 @@ VALUES
     (7,  4, 'Neurology',          102, '2026-03-26 10:42:00'),
 
     -- Visit 8: triaged then closed allowed; non-critical general case
-    (8,  5, NULL,                 103, '2026-03-26 11:08:00'),
+    (8,  5, 'Orthopedics',        103, '2026-03-26 11:08:00'),
 
     -- Visit 9: consciousness=3 => critical => level 1, specialization Neurology
     (9,  1, 'Neurology',          104, '2026-03-26 11:33:00'),
@@ -166,9 +166,8 @@ GO
 INSERT INTO dbo.Examination
     (Visit_ID, Doctor_ID, Exam_Time, Room_ID, Notes)
 VALUES
-    (4,  201, '2026-03-26 09:35:00', 8, 'Chest pain under observation. ECG and vitals monitoring recommended.'),
-    (6,  202, '2026-03-26 10:25:00', 5, 'Fever, cough, and mild respiratory distress. Pulmonary evaluation performed.'),
-    (12, 203, '2026-03-27 08:05:00', 3, 'Allergic reaction treated with antihistamines and monitored for airway stability.');
+    (8,  102, '2026-03-26 11:30:00', 4, 'Examined knee, minor contusion. Prescribed rest and ibuprofen.'),
+    (12, 104, '2026-03-27 08:05:00', 3, 'Allergic reaction treated with antihistamines and monitored for airway stability.');
 GO
 
 -- ============================================

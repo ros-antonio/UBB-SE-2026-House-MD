@@ -63,6 +63,40 @@ namespace ERManagementSystem.Repositories
             return history;
         }
 
+        // Retrieves a list of Examination records by Patient_ID (full history).
+        public List<Examination> GetByPatientId(string patientId)
+        {
+            var history = new List<Examination>();
+            string sql = @"
+                SELECT e.Exam_ID, e.Visit_ID, e.Doctor_ID, e.Exam_Time, e.Room_ID, e.Notes 
+                FROM Examination e 
+                JOIN ER_Visit v ON e.Visit_ID = v.Visit_ID 
+                WHERE v.Patient_ID = @Patient_ID 
+                ORDER BY e.Exam_Time DESC";
+
+            var parameters = new SqlParameter[]
+            {
+                new SqlParameter("@Patient_ID", patientId)
+            };
+
+            using var reader = _sqlHelper.ExecuteReader(sql, parameters);
+
+            while (reader.Read())
+            {
+                history.Add(new Examination
+                {
+                    Exam_ID = reader.GetInt32(reader.GetOrdinal("Exam_ID")),
+                    Visit_ID = reader.GetInt32(reader.GetOrdinal("Visit_ID")),
+                    Doctor_ID = reader.GetInt32(reader.GetOrdinal("Doctor_ID")),
+                    Exam_Time = reader.GetDateTime(reader.GetOrdinal("Exam_Time")),
+                    Room_ID = reader.GetInt32(reader.GetOrdinal("Room_ID")),
+                    Notes = reader.IsDBNull(reader.GetOrdinal("Notes")) ? string.Empty : reader.GetString(reader.GetOrdinal("Notes"))
+                });
+            }
+
+            return history;
+        }
+
         // Task 4.13: Auto-save notes feature
         public void UpdateNotes(int examId, string notes)
         {
@@ -167,19 +201,15 @@ namespace ERManagementSystem.Repositories
         }
 
         // Temporary method to fetch a valid Room_ID until Room Assignment feature is completed
-        public int GetRoomIdByVisitId(int visitId)
+        public int GetFirstRoomId()
         {
-
-            string sql = "SELECT TOP 1 Room_ID FROM Examination WHERE Visit_ID = @VisitId ORDER BY Exam_Time DESC";
-            SqlParameter[] parameters = { new SqlParameter("@VisitId", visitId) };
-            using (var reader = _sqlHelper.ExecuteReader(sql, parameters))
+            string query = "SELECT TOP 1 Room_ID FROM dbo.ER_Room";
+            using var reader = _sqlHelper.ExecuteReader(query);
+            if (reader.Read())
             {
-                if (reader.Read())
-                {
-                    return Convert.ToInt32(reader["Room_ID"]);
-                }
+                return reader.GetInt32(0);
             }
-            throw new Exception($"No examination record found for Visit ID {visitId}.");
+            return 1; 
         }
     }
 }

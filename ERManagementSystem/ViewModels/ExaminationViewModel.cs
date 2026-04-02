@@ -124,12 +124,11 @@ namespace ERManagementSystem.ViewModels
             _autoSaveTimer.Start();
         }
 
-        // Task 4.13: Auto-Save Tick Handler 
         private void AutoSaveTimer_Tick(object? sender, object e)
         {
             if (SelectedVisit != null && Notes != _lastSavedNotes)
             {
-                var existingExam = ExaminationHistory.FirstOrDefault();
+                var existingExam = ExaminationHistory.FirstOrDefault(e => e.Visit_ID == SelectedVisit.Visit_ID);
                 if (existingExam != null)
                 {
                     _examRepository.UpdateNotes(existingExam.Exam_ID, Notes);
@@ -210,7 +209,7 @@ namespace ERManagementSystem.ViewModels
             }
 
             ExaminationHistory.Clear();
-            var history = _examRepository.GetByVisitId(value.Visit_ID);
+            var history = _examRepository.GetByPatientId(value.Patient_ID);
             foreach (var exam in history)
             {
                 ExaminationHistory.Add(exam);
@@ -228,10 +227,10 @@ namespace ERManagementSystem.ViewModels
             }
 
             // For WAITING_FOR_DOCTOR or IN_EXAMINATION visits,
-            // look up doctor details from the examination record first
+            // look up doctor details from the CURRENT examination record first
             if (value.Status == "WAITING_FOR_DOCTOR" || value.Status == "IN_EXAMINATION")
             {
-                var existingExam = history.FirstOrDefault();
+                var existingExam = history.FirstOrDefault(e => e.Visit_ID == value.Visit_ID);
                 if (existingExam != null)
                 {
                     DoctorId = existingExam.Doctor_ID;
@@ -270,7 +269,7 @@ namespace ERManagementSystem.ViewModels
                 DoctorSpecialty = string.Empty;
             }
 
-            if (history.FirstOrDefault() == null)
+            if (history.FirstOrDefault(e => e.Visit_ID == value.Visit_ID) == null)
             {
                 Notes = string.Empty;
             }
@@ -477,10 +476,10 @@ namespace ERManagementSystem.ViewModels
         {
             if (SelectedVisit == null || XamlRoot == null) return;
 
-            var existingExam = ExaminationHistory.FirstOrDefault();
+            var existingExam = ExaminationHistory.FirstOrDefault(e => e.Visit_ID == SelectedVisit.Visit_ID);
             if (existingExam == null)
             {
-                await ShowDialog("Notice", "No existing examination found to summarize.");
+                await ShowDialog("Notice", "No existing examination found for this current visit to summarize.");
                 return;
             }
 

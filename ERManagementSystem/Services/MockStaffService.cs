@@ -16,14 +16,15 @@ namespace ERManagementSystem.Services
         public int RequestDoctor(string specialization, Triage_Parameters symptoms)
         {
             // Hardcoded doctor assignment based on specialization
-            return specialization switch
+            return specialization?.Trim().ToLowerInvariant() switch
             {
-                "Cardiology" => 101,
-                "Orthopedics" => 102,
-                "Neurology" => 103,
-                "Pulmonology" => 105,
-                "Emergency Medicine" => 106,
-                "General" => 104,
+                "cardiology" => 101,
+                "orthopedics" => 102,
+                "neurology" => 103,
+                "pulmonology" => 105,
+                "emergency medicine" => 106,
+                "general surgery" => 104,
+                "general" => 104,
                 _ => 104 // Default to General practitioner
             };
         }
