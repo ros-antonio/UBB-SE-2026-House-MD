@@ -55,7 +55,7 @@ namespace ERManagementSystem.Helpers
             }
             catch
             {
-                // Avoid throwing from the logger itself.
+                
             }
         }
     }

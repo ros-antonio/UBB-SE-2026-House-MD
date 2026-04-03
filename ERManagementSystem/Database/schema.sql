@@ -191,3 +191,7 @@ CREATE TABLE dbo.Transfer_Log
         CHECK (Status IN ('SUCCESS', 'FAILED', 'RETRYING'))
 );
 GO
+
+USE ERManagementSystem;
+ALTER TABLE dbo.Transfer_Log
+ADD FilePath NVARCHAR(500) NULL
