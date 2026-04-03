@@ -31,6 +31,7 @@ namespace ERManagementSystem.ViewModels
         private readonly ExaminationRepository _examRepository;
         private readonly TriageRepository _triageRepository;
         private readonly TriageParametersRepository _triageParamsRepo;
+        private readonly RoomRepository? _roomRepository;   // Task 5.13: resolve correct Room_ID
 
         // XamlRoot needed to show ContentDialogs — set by the View
         public Microsoft.UI.Xaml.XamlRoot? XamlRoot { get; set; }
@@ -93,7 +94,8 @@ namespace ERManagementSystem.ViewModels
             ERVisitRepository erVisitRepository,
             ExaminationRepository examRepository,
             TriageRepository triageRepository,
-            TriageParametersRepository triageParamsRepo)
+            TriageParametersRepository triageParamsRepo,
+            RoomRepository? roomRepository = null)   // optional — Task 5.13
         {
             _examinationService = examinationService;
             _mockStaffService = mockStaffService;
@@ -101,6 +103,7 @@ namespace ERManagementSystem.ViewModels
             _examRepository = examRepository;
             _triageRepository = triageRepository;
             _triageParamsRepo = triageParamsRepo;
+            _roomRepository = roomRepository;
 
             // Task 4.13: Initialize 10s auto-save timer
             _autoSaveTimer = new Microsoft.UI.Xaml.DispatcherTimer();
@@ -345,8 +348,18 @@ namespace ERManagementSystem.ViewModels
 
             try
             {
-                // Fetch a valid Room_ID from the ER_Room table
-                int assignedRoomId = _examRepository.GetFirstRoomId();
+                // Task 5.13: use the actual room assigned to this visit so the auto-clean hook
+                // in StateManagementService.ChangeVisitStatus() can find the right room later.
+                int assignedRoomId;
+                if (_roomRepository != null)
+                {
+                    assignedRoomId = _roomRepository.GetAssignedRoomIdForVisit(SelectedVisit.Visit_ID)
+                                     ?? _examRepository.GetFirstRoomId();
+                }
+                else
+                {
+                    assignedRoomId = _examRepository.GetFirstRoomId();
+                }
 
                 var examination = new Examination
                 {
