@@ -60,7 +60,8 @@ namespace ERManagementSystem.ViewModels
         [RelayCommand]
         private void ShowRoomManagement()
         {
-            navigationService.Navigate(typeof(RoomManagementView));
+            var vm = App.Services.GetRequiredService<RoomManagementViewModel>();
+            navigationService.Navigate(typeof(RoomManagementView), vm);
         }
     }
 }

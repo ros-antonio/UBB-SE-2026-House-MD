@@ -6,17 +6,17 @@ using ERManagementSystem.Repositories;
 
 namespace ERManagementSystem.Services
 {
-    public class StateManagementService
+    public class StateManagementService : IStateManagementService
     {
-        private readonly ERVisitRepository erVisitRepository;
-        private readonly RoomRepository? roomRepository;
+        private readonly IERVisitRepository erVisitRepository;
+        private readonly IRoomRepository? roomRepository;
 
-        public StateManagementService(ERVisitRepository erVisitRepository)
+        public StateManagementService(IERVisitRepository erVisitRepository)
         {
             this.erVisitRepository = erVisitRepository;
         }
 
-        public StateManagementService(ERVisitRepository erVisitRepository, RoomRepository roomRepository)
+        public StateManagementService(IERVisitRepository erVisitRepository, IRoomRepository roomRepository)
         {
             this.erVisitRepository = erVisitRepository;
             this.roomRepository = roomRepository;

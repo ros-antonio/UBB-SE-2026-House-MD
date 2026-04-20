@@ -6,7 +6,7 @@ using ERManagementSystem.Models;
 
 namespace ERManagementSystem.Repositories
 {
-    public class PatientRepository
+    public class PatientRepository : IPatientRepository
     {
         private readonly SqlHelper sqlHelper;
 

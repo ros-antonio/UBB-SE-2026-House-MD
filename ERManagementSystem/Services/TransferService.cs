@@ -27,12 +27,12 @@ namespace ERManagementSystem.Services
 
         public const string TARGET_SYSTEM = "Patient Management";
 
-        private readonly StateManagementService stateManagementService;
+        private readonly IStateManagementService stateManagementService;
 
         public TransferService(
             SqlHelper sqlHelper,
             ITransferLogRepository transferLogRepository,
-            StateManagementService stateManagementService)
+            IStateManagementService stateManagementService)
         {
             this.sqlHelper = sqlHelper;
             this.transferLogRepository = transferLogRepository;

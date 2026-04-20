@@ -13,20 +13,20 @@ namespace ERManagementSystem.Services
 {
     public class ExaminationService : IExaminationService
     {
-        private readonly ExaminationRepository examRepository;
-        private readonly ERVisitRepository erVisitRepository;
-        private readonly TriageRepository triageRepository;
+        private readonly IExaminationRepository examRepository;
+        private readonly IERVisitRepository erVisitRepository;
+        private readonly ITriageRepository triageRepository;
         private readonly MockStaffService mockStaffService;
-        private readonly StateManagementService stateManagementService;
-        private readonly TriageParametersRepository triageParamsRepo;
+        private readonly IStateManagementService stateManagementService;
+        private readonly ITriageParametersRepository triageParamsRepo;
 
         public ExaminationService(
-            ExaminationRepository examRepository,
-            ERVisitRepository erVisitRepository,
-            TriageRepository triageRepository,
+            IExaminationRepository examRepository,
+            IERVisitRepository erVisitRepository,
+            ITriageRepository triageRepository,
             MockStaffService mockStaffService,
-            StateManagementService stateManagementService,
-            TriageParametersRepository triageParamsRepo)
+            IStateManagementService stateManagementService,
+            ITriageParametersRepository triageParamsRepo)
         {
             this.examRepository = examRepository;
             this.erVisitRepository = erVisitRepository;

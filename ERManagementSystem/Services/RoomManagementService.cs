@@ -6,13 +6,20 @@ using ERManagementSystem.Repositories;
 
 namespace ERManagementSystem.Services
 {
-    public class RoomManagementService
+    public class RoomManagementService : IRoomManagementService
     {
-        private readonly RoomRepository roomRepository;
+        private readonly IRoomRepository roomRepository;
+        private readonly IPatientRepository patientRepository;
+        private readonly ITriageRepository triageRepository;
 
-        public RoomManagementService(RoomRepository roomRepository)
+        public RoomManagementService(
+            IRoomRepository roomRepository,
+            IPatientRepository patientRepository,
+            ITriageRepository triageRepository)
         {
             this.roomRepository = roomRepository;
+            this.patientRepository = patientRepository;
+            this.triageRepository = triageRepository;
         }
 
         public List<ER_Room> GetAvailableRooms() => roomRepository.GetAvailableRooms();
@@ -50,6 +57,22 @@ namespace ERManagementSystem.Services
             room.UpdateAvailabilityStatus(ER_Room.RoomStatus.Available);
             roomRepository.UpdateAvailabilityStatus(roomId, ER_Room.RoomStatus.Available);
             Logger.Info($"Room {roomId} is now available.");
+        }
+
+        public RoomVisitDetails? GetRoomVisitDetails(int roomId)
+        {
+            var visit = roomRepository.GetVisitByRoomId(roomId);
+            if (visit == null)
+            {
+                return null;
+            }
+
+            return new RoomVisitDetails
+            {
+                Visit = visit,
+                Patient = patientRepository.GetById(visit.Patient_ID),
+                Triage = triageRepository.GetByVisitId(visit.Visit_ID)
+            };
         }
     }
 }

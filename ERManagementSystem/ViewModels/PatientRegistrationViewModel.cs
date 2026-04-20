@@ -11,9 +11,9 @@ namespace ERManagementSystem.ViewModels
 {
     public partial class PatientRegistrationViewModel : BaseViewModel
     {
-        private readonly RegistrationService registrationService;
+        private readonly IRegistrationService registrationService;
 
-        public PatientRegistrationViewModel(RegistrationService registrationService)
+        public PatientRegistrationViewModel(IRegistrationService registrationService)
         {
             this.registrationService = registrationService;
         }

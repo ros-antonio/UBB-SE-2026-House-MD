@@ -37,27 +37,27 @@ namespace ERManagementSystem
                 sp.GetRequiredService<NavigationService>());
 
             // ── Repositories ─────────────────────────────────────────────────
-            services.AddTransient<PatientRepository>();
-            services.AddTransient<ERVisitRepository>();
-            services.AddTransient<TriageRepository>();
-            services.AddTransient<TriageParametersRepository>();
-            services.AddTransient<ExaminationRepository>();
+            services.AddTransient<IPatientRepository, PatientRepository>();
+            services.AddTransient<IERVisitRepository, ERVisitRepository>();
+            services.AddTransient<ITriageRepository, TriageRepository>();
+            services.AddTransient<ITriageParametersRepository, TriageParametersRepository>();
+            services.AddTransient<IExaminationRepository, ExaminationRepository>();
             services.AddTransient<ITransferLogRepository, TransferLogRepository>();
-            services.AddTransient<RoomRepository>();              // Alex
+            services.AddTransient<IRoomRepository, RoomRepository>();
 
             // ── Services ─────────────────────────────────────────────────────
-            services.AddTransient<RegistrationService>();
+            services.AddTransient<IRegistrationService, RegistrationService>();
             // Task 5.13: use factory so StateManagementService always gets RoomRepository
             // enabling auto-set room to cleaning when visit is TRANSFERRED or CLOSED.
-            services.AddTransient<StateManagementService>(sp =>
+            services.AddTransient<IStateManagementService>(sp =>
                 new StateManagementService(
-                    sp.GetRequiredService<ERVisitRepository>(),
-                    sp.GetRequiredService<RoomRepository>()));
+                    sp.GetRequiredService<IERVisitRepository>(),
+                    sp.GetRequiredService<IRoomRepository>()));
             services.AddSingleton<NurseService>();
             services.AddTransient<ITriageService, TriageService>();
             services.AddTransient<IQueueService, QueueService>();
             services.AddTransient<IRoomAssignmentService, RoomAssignmentService>();
-            services.AddTransient<RoomManagementService>();       // Alex
+            services.AddTransient<IRoomManagementService, RoomManagementService>();
             services.AddSingleton<MockStaffService>();
             services.AddTransient<IExaminationService, ExaminationService>();
             services.AddTransient<ITransferService, TransferService>();

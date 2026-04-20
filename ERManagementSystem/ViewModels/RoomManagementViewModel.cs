@@ -12,23 +12,14 @@ namespace ERManagementSystem.ViewModels
 {
     public partial class RoomManagementViewModel : BaseViewModel
     {
-        private readonly RoomManagementService roomManagementService;
-        private readonly ERManagementSystem.Repositories.RoomRepository roomRepo;
-        private readonly ERManagementSystem.Repositories.PatientRepository patientRepo;
-        private readonly ERManagementSystem.Repositories.TriageRepository triageRepo;
+        private readonly IRoomManagementService roomManagementService;
 
         public Microsoft.UI.Xaml.XamlRoot? XamlRoot { get; set; }
 
         public RoomManagementViewModel(
-            RoomManagementService roomManagementService,
-            ERManagementSystem.Repositories.RoomRepository roomRepo,
-            ERManagementSystem.Repositories.PatientRepository patientRepo,
-            ERManagementSystem.Repositories.TriageRepository triageRepo)
+            IRoomManagementService roomManagementService)
         {
             this.roomManagementService = roomManagementService;
-            this.roomRepo = roomRepo;
-            this.patientRepo = patientRepo;
-            this.triageRepo = triageRepo;
         }
 
         [ObservableProperty] private Patient? selectedPatient;
@@ -51,16 +42,16 @@ namespace ERManagementSystem.ViewModels
         {
             try
             {
-                var visit = roomRepo.GetVisitByRoomId(room.Room_ID);
-                if (visit == null)
+                var roomVisitDetails = roomManagementService.GetRoomVisitDetails(room.Room_ID);
+                if (roomVisitDetails == null)
                 {
                     ClearVisitDetails();
                     return;
                 }
 
-                SelectedVisit = visit;
-                SelectedPatient = patientRepo.GetById(visit.Patient_ID);
-                SelectedTriage = triageRepo.GetByVisitId(visit.Visit_ID);
+                SelectedVisit = roomVisitDetails.Visit;
+                SelectedPatient = roomVisitDetails.Patient;
+                SelectedTriage = roomVisitDetails.Triage;
             }
             catch
             {

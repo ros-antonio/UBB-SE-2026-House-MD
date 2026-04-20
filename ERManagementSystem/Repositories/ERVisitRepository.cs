@@ -6,7 +6,7 @@ using ERManagementSystem.Models;
 
 namespace ERManagementSystem.Repositories
 {
-    public class ERVisitRepository
+    public class ERVisitRepository : IERVisitRepository
     {
         private readonly SqlHelper sqlHelper;
 

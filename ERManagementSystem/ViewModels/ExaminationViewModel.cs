@@ -28,11 +28,11 @@ namespace ERManagementSystem.ViewModels
     {
         private readonly IExaminationService examinationService;
         private readonly MockStaffService mockStaffService;
-        private readonly ERVisitRepository erVisitRepository;
-        private readonly ExaminationRepository examRepository;
-        private readonly TriageRepository triageRepository;
-        private readonly TriageParametersRepository triageParamsRepo;
-        private readonly RoomRepository? roomRepository;   // Task 5.13: resolve correct Room_ID
+        private readonly IERVisitRepository erVisitRepository;
+        private readonly IExaminationRepository examRepository;
+        private readonly ITriageRepository triageRepository;
+        private readonly ITriageParametersRepository triageParamsRepo;
+        private readonly IRoomRepository? roomRepository;   // Task 5.13: resolve correct Room_ID
 
         // XamlRoot needed to show ContentDialogs — set by the View
         public Microsoft.UI.Xaml.XamlRoot? XamlRoot { get; set; }
@@ -89,11 +89,11 @@ namespace ERManagementSystem.ViewModels
         public ExaminationViewModel(
             IExaminationService examinationService,
             MockStaffService mockStaffService,
-            ERVisitRepository erVisitRepository,
-            ExaminationRepository examRepository,
-            TriageRepository triageRepository,
-            TriageParametersRepository triageParamsRepo,
-            RoomRepository? roomRepository = null) // optional — Task 5.13
+            IERVisitRepository erVisitRepository,
+            IExaminationRepository examRepository,
+            ITriageRepository triageRepository,
+            ITriageParametersRepository triageParamsRepo,
+            IRoomRepository? roomRepository = null) // optional — Task 5.13
         {
             this.examinationService = examinationService;
             this.mockStaffService = mockStaffService;

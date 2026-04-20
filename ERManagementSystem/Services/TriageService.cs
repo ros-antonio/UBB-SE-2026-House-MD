@@ -9,16 +9,16 @@ namespace ERManagementSystem.Services
 {
     public class TriageService : ITriageService
     {
-        private readonly TriageRepository triageRepository;
-        private readonly TriageParametersRepository triageParametersRepository;
+        private readonly ITriageRepository triageRepository;
+        private readonly ITriageParametersRepository triageParametersRepository;
         private readonly NurseService nurseService;
-        private readonly StateManagementService stateService;
+        private readonly IStateManagementService stateService;
 
         public TriageService(
-            TriageRepository triageRepository,
-            TriageParametersRepository triageParametersRepository,
+            ITriageRepository triageRepository,
+            ITriageParametersRepository triageParametersRepository,
             NurseService nurseService,
-            StateManagementService stateService)
+            IStateManagementService stateService)
         {
             this.triageRepository = triageRepository;
             this.triageParametersRepository = triageParametersRepository;

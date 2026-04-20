@@ -9,9 +9,9 @@ namespace ERManagementSystem.Services
 {
     public class QueueService : IQueueService
     {
-        private readonly ERVisitRepository visitRepository;
+        private readonly IERVisitRepository visitRepository;
 
-        public QueueService(ERVisitRepository visitRepository)
+        public QueueService(IERVisitRepository visitRepository)
         {
             this.visitRepository = visitRepository;
         }

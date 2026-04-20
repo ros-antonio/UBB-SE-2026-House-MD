@@ -9,14 +9,14 @@ using ERManagementSystem.Repositories;
 
 namespace ERManagementSystem.Services
 {
-    public class RegistrationService
+    public class RegistrationService : IRegistrationService
     {
-        private readonly PatientRepository patientRepository;
-        private readonly ERVisitRepository erVisitRepository;
+        private readonly IPatientRepository patientRepository;
+        private readonly IERVisitRepository erVisitRepository;
 
         public RegistrationService(
-            PatientRepository patientRepository,
-            ERVisitRepository erVisitRepository)
+            IPatientRepository patientRepository,
+            IERVisitRepository erVisitRepository)
         {
             this.patientRepository = patientRepository;
             this.erVisitRepository = erVisitRepository;

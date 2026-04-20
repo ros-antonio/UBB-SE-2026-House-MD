@@ -9,20 +9,20 @@ namespace ERManagementSystem.Services
 {
     public class RoomAssignmentService : IRoomAssignmentService
     {
-        private readonly RoomRepository roomRepository;
-        private readonly ERVisitRepository erVisitRepository;
-        private readonly StateManagementService stateManagementService;
-        private readonly TriageParametersRepository triageParamsRepository;
-        private readonly PatientRepository patientRepository;
-        private readonly TriageRepository triageRepository;
+        private readonly IRoomRepository roomRepository;
+        private readonly IERVisitRepository erVisitRepository;
+        private readonly IStateManagementService stateManagementService;
+        private readonly ITriageParametersRepository triageParamsRepository;
+        private readonly IPatientRepository patientRepository;
+        private readonly ITriageRepository triageRepository;
 
         public RoomAssignmentService(
-            RoomRepository roomRepository,
-            ERVisitRepository erVisitRepository,
-            StateManagementService stateManagementService,
-            TriageParametersRepository triageParamsRepository,
-            PatientRepository patientRepository,
-            TriageRepository triageRepository)
+            IRoomRepository roomRepository,
+            IERVisitRepository erVisitRepository,
+            IStateManagementService stateManagementService,
+            ITriageParametersRepository triageParamsRepository,
+            IPatientRepository patientRepository,
+            ITriageRepository triageRepository)
         {
             this.roomRepository = roomRepository;
             this.erVisitRepository = erVisitRepository;

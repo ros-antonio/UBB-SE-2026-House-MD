@@ -6,7 +6,7 @@ using Microsoft.Data.SqlClient;
 
 namespace ERManagementSystem.Repositories
 {
-    public class ExaminationRepository
+    public class ExaminationRepository : IExaminationRepository
     {
         private readonly SqlHelper sqlHelper;
 

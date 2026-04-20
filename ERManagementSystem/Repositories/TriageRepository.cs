@@ -5,7 +5,7 @@ using Microsoft.Data.SqlClient;
 
 namespace ERManagementSystem.Repositories
 {
-    public class TriageRepository
+    public class TriageRepository : ITriageRepository
     {
         private readonly SqlHelper sqlHelper;
 
