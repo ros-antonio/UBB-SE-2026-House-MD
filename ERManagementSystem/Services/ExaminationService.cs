@@ -65,7 +65,7 @@ namespace ERManagementSystem.Services
                 triage.Specialization,
                 triageParameters);
 
-            _stateManagementService.ChangeVisitStatus(visitID, "WAITING_FOR_DOCTOR");
+            _stateManagementService.ChangeVisitStatus(visitID, ER_Visit.VisitStatus.WAITING_FOR_DOCTOR);
             Logger.Info($"Visit {visitID} transitioned to WAITING_FOR_DOCTOR.");
 
             return assignedDoctorId;
@@ -78,7 +78,7 @@ namespace ERManagementSystem.Services
         public void SaveExamination(Examination exam)
         {
             _examRepository.Add(exam);
-            _stateManagementService.ChangeVisitStatus(exam.Visit_ID, "IN_EXAMINATION");
+            _stateManagementService.ChangeVisitStatus(exam.Visit_ID, ER_Visit.VisitStatus.IN_EXAMINATION);
             Logger.Info($"Visit {exam.Visit_ID} transitioned to IN_EXAMINATION following saved examination.");
         }
     }        

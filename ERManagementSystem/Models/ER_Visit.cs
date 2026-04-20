@@ -4,21 +4,16 @@ using System.Linq;
 
 namespace ERManagementSystem.Models
 {
-    
     public class ER_Visit
     {
-        
         public int Visit_ID { get; set; }
 
-       
         public string Patient_ID { get; set; } = string.Empty;
 
-       
         public DateTime Arrival_date_time { get; set; } = DateTime.Now;
 
         public string Chief_Complaint { get; set; } = string.Empty;
 
-        
         public string Status { get; set; } = VisitStatus.REGISTERED;
 
         public static class VisitStatus
@@ -45,7 +40,6 @@ namespace ERManagementSystem.Models
             VisitStatus.CLOSED
         };
 
-        
         public static readonly Dictionary<string, List<string>> ValidTransitions =
             new Dictionary<string, List<string>>
             {
@@ -58,8 +52,6 @@ namespace ERManagementSystem.Models
                 { VisitStatus.TRANSFERRED,        new List<string>() },
                 { VisitStatus.CLOSED,             new List<string>() }
             };
-
-       
 
         public bool Validate(out List<string> errors)
         {
@@ -83,8 +75,5 @@ namespace ERManagementSystem.Models
 
             return errors.Count == 0;
         }
-
-
-      
     }
 }

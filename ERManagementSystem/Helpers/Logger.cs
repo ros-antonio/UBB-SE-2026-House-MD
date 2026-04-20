@@ -1,9 +1,7 @@
 ﻿using System;
-using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
-using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
 
 namespace ERManagementSystem.Helpers
 {
@@ -53,9 +51,10 @@ namespace ERManagementSystem.Helpers
                     File.AppendAllText(LogFilePath, logEntry);
                 }
             }
-            catch
+            catch (Exception ex)
             {
-                
+                Debug.WriteLine($"[Logger] Failed to write log entry: {ex}");
+                Trace.WriteLine($"[Logger] Failed to write log entry: {ex}");
             }
         }
     }

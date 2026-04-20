@@ -73,7 +73,7 @@ namespace ERManagementSystem.Services
                     throw new InvalidOperationException($"Visit {visitId} not found.");
                 }
 
-                visit.Status = "IN_ROOM";
+                visit.Status = ER_Visit.VisitStatus.IN_ROOM;
                 _visitRepository.UpdateStatus(visitId, visit.Status);
 
                 Logger.Info($"[QueueService] Visit {visitId} moved to IN_ROOM");

@@ -133,7 +133,7 @@ namespace ERManagementSystem.ViewModels
                 await ShowDialog("Validation Error", "Please select a visit before sending.");
                 return;
             }
-            if (SelectedVisit.Status != "IN_EXAMINATION")
+            if (SelectedVisit.Status != ER_Visit.VisitStatus.IN_EXAMINATION)
             {
                 await ShowDialog("Validation Error",
                     "Transfer is only allowed for visits with status IN_EXAMINATION.");
@@ -155,7 +155,7 @@ namespace ERManagementSystem.ViewModels
                 _transferService.TransitionVisitToTransferred(SelectedVisit.Visit_ID);
                 _transferService.MarkPatientAsTransferred(SelectedVisit.Visit_ID);
 
-                SelectedVisit.Status = "TRANSFERRED";
+                SelectedVisit.Status = ER_Visit.VisitStatus.TRANSFERRED;
                 SelectedVisit.Transferred = true;
 
                 StatusMessage = "SUCCESS";
@@ -195,7 +195,7 @@ namespace ERManagementSystem.ViewModels
                     _transferService.TransitionVisitToTransferred(SelectedVisit.Visit_ID);
                     _transferService.MarkPatientAsTransferred(SelectedVisit.Visit_ID);
 
-                    SelectedVisit.Status = "TRANSFERRED";
+                    SelectedVisit.Status = ER_Visit.VisitStatus.TRANSFERRED;
                     SelectedVisit.Transferred = true;
 
                     StatusMessage = "Retry SUCCESS";
@@ -226,7 +226,7 @@ namespace ERManagementSystem.ViewModels
                 await ShowDialog("Validation Error", "Please select a visit before closing.");
                 return;
             }
-            if (SelectedVisit.Status != "IN_EXAMINATION")
+            if (SelectedVisit.Status != ER_Visit.VisitStatus.IN_EXAMINATION)
             {
                 await ShowDialog("Validation Error",
                     "Closing is only allowed for visits with status IN_EXAMINATION.");
@@ -240,7 +240,7 @@ namespace ERManagementSystem.ViewModels
             {
                 _stateManagementService.CloseVisit(visitId);
 
-                SelectedVisit.Status = "CLOSED"; 
+                SelectedVisit.Status = ER_Visit.VisitStatus.CLOSED;
 
                 await ShowDialog("Visit Closed",
                     $"Visit {visitId} for {patientName} has been closed successfully.");

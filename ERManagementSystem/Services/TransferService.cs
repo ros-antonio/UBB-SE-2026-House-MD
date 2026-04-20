@@ -152,7 +152,7 @@ namespace ERManagementSystem.Services
         // Task 6.10 — Transition visit IN_EXAMINATION → TRANSFERRED
         public void TransitionVisitToTransferred(int visitId)
         {
-            _stateManagementService.ChangeVisitStatus(visitId, "TRANSFERRED");
+            _stateManagementService.ChangeVisitStatus(visitId, ER_Visit.VisitStatus.TRANSFERRED);
             Logger.Info($"[TransferService] Visit {visitId} transitioned to TRANSFERRED");
         }
         // Task 6.3 — Build PatientDataPackage via hand-written JOIN query

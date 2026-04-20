@@ -140,19 +140,20 @@ namespace ERManagementSystem.ViewModels
         //  Task 4.9: CanExecute methods 
 
         private bool CanRequestDoctor()
-            => SelectedVisit != null && SelectedVisit.Status == "IN_ROOM";
+            => SelectedVisit != null && SelectedVisit.Status == ER_Visit.VisitStatus.IN_ROOM;
 
         private bool CanSaveExamination()
         {
             return SelectedVisit != null &&
                    DoctorId != 0 &&
                    !string.IsNullOrWhiteSpace(Notes) &&
-                   (SelectedVisit.Status == "WAITING_FOR_DOCTOR" || SelectedVisit.Status == "IN_EXAMINATION");
+                   (SelectedVisit.Status == ER_Visit.VisitStatus.WAITING_FOR_DOCTOR ||
+                    SelectedVisit.Status == ER_Visit.VisitStatus.IN_EXAMINATION);
         }
 
         private bool CanViewSummary()
         {
-            return SelectedVisit != null && SelectedVisit.Status == "IN_EXAMINATION";
+            return SelectedVisit != null && SelectedVisit.Status == ER_Visit.VisitStatus.IN_EXAMINATION;
         }
 
 
@@ -171,8 +172,8 @@ namespace ERManagementSystem.ViewModels
             StatusMessage = string.Empty;
             ClearTriageDetails();
 
-            var inRoom = _erVisitRepository.GetByStatus("IN_ROOM");
-            var waiting = _erVisitRepository.GetByStatus("WAITING_FOR_DOCTOR");
+            var inRoom = _erVisitRepository.GetByStatus(ER_Visit.VisitStatus.IN_ROOM);
+            var waiting = _erVisitRepository.GetByStatus(ER_Visit.VisitStatus.WAITING_FOR_DOCTOR);
 
             var allEligible = inRoom.Concat(waiting).OrderBy(v => v.Arrival_date_time);
 
@@ -216,7 +217,8 @@ namespace ERManagementSystem.ViewModels
 
             // For WAITING_FOR_DOCTOR or IN_EXAMINATION visits,
             // look up doctor details from the CURRENT examination record first
-            if (value.Status == "WAITING_FOR_DOCTOR" || value.Status == "IN_EXAMINATION")
+            if (value.Status == ER_Visit.VisitStatus.WAITING_FOR_DOCTOR ||
+                value.Status == ER_Visit.VisitStatus.IN_EXAMINATION)
             {
                 var existingExam = history.FirstOrDefault(e => e.Visit_ID == value.Visit_ID);
                 if (existingExam != null)
@@ -385,7 +387,7 @@ namespace ERManagementSystem.ViewModels
                     Patient_ID = SelectedVisit.Patient_ID,
                     Arrival_date_time = SelectedVisit.Arrival_date_time,
                     Chief_Complaint = SelectedVisit.Chief_Complaint,
-                    Status = "IN_EXAMINATION"
+                    Status = ER_Visit.VisitStatus.IN_EXAMINATION
                 };
 
                 int index = EligibleVisits.IndexOf(SelectedVisit);

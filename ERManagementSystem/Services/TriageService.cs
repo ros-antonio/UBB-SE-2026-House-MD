@@ -86,7 +86,7 @@ namespace ERManagementSystem.Services
 
                 triage.Triage_ID = triageId;
 
-                _stateService.ChangeVisitStatus(visitId, "TRIAGED");
+                _stateService.ChangeVisitStatus(visitId, ER_Visit.VisitStatus.TRIAGED);
 
                 Logger.Info($"[TriageService] Completed triage {triageId} for visit {visitId}");
 
