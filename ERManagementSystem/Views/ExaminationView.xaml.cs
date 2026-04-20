@@ -1,6 +1,5 @@
-using ERManagementSystem.Repositories;
-using ERManagementSystem.Services;
 using ERManagementSystem.ViewModels;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Navigation;
@@ -33,37 +32,14 @@ namespace ERManagementSystem.Views
         {
             base.OnNavigatedTo(e);
 
+            if (e.Parameter is ExaminationViewModel examinationViewModel)
+            {
+                ViewModel = examinationViewModel;
+            }
+
             if (ViewModel == null)
             {
-                // Create dependencies manually (same pattern as TransferLogView)
-                var dbConnection = new DataAccess.DatabaseConnection();
-                var sqlHelper = new Helpers.SqlHelper(dbConnection);
-
-                // Repositories
-                var examRepository = new ExaminationRepository(sqlHelper);
-                var erVisitRepository = new ERVisitRepository(sqlHelper);
-                var triageRepository = new TriageRepository(sqlHelper);
-                var triageParamsRepo = new TriageParametersRepository(sqlHelper);
-                var roomRepository = new RoomRepository(sqlHelper);
-
-                // Services
-                // Task 5.13: use room-aware StateManagementService so auto-clean fires
-                var stateManagementService = new StateManagementService(erVisitRepository, roomRepository);
-                var mockStaffService = new MockStaffService();
-                var examinationService = new ExaminationService(
-                    examRepository,
-                    erVisitRepository,
-                    triageRepository,
-                    mockStaffService,
-                    stateManagementService,
-                    triageParamsRepo);
-
-                // Task 5.13: pass roomRepository so SaveExamination stores the correct Room_ID
-                ViewModel = new ExaminationViewModel(
-                    examinationService, mockStaffService,
-                    erVisitRepository, examRepository, triageRepository,
-                    triageParamsRepo,
-                    roomRepository);
+                ViewModel = App.Services.GetRequiredService<ExaminationViewModel>();
             }
 
             // Re-evaluate all x:Bind bindings now that ViewModel is set.

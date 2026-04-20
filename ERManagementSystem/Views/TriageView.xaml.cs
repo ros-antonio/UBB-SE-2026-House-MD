@@ -1,4 +1,5 @@
 using ERManagementSystem.ViewModels;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Navigation;
 using System.ComponentModel;
@@ -21,10 +22,21 @@ namespace ERManagementSystem.Views
             if (e.Parameter is TriageViewModel vm)
             {
                 ViewModel = vm;
-                ViewModel.PropertyChanged += ViewModel_PropertyChanged;
-                ViewModel.LoadVisitsForTriageCommand.Execute(null);
-                Bindings.Update();
             }
+            else if (ViewModel == null)
+            {
+                ViewModel = App.Services.GetRequiredService<TriageViewModel>();
+            }
+
+            if (ViewModel == null)
+            {
+                return;
+            }
+
+            ViewModel.PropertyChanged -= ViewModel_PropertyChanged;
+            ViewModel.PropertyChanged += ViewModel_PropertyChanged;
+            ViewModel.LoadVisitsForTriageCommand.Execute(null);
+            Bindings.Update();
         }
 
         protected override void OnNavigatedFrom(NavigationEventArgs e)

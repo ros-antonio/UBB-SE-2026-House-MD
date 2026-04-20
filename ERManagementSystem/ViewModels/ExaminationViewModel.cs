@@ -26,7 +26,7 @@ namespace ERManagementSystem.ViewModels
     /// </summary>
     public partial class ExaminationViewModel : ObservableObject
     {
-        private readonly ExaminationService _examinationService;
+        private readonly IExaminationService _examinationService;
         private readonly MockStaffService _mockStaffService;
         private readonly ERVisitRepository _erVisitRepository;
         private readonly ExaminationRepository _examRepository;
@@ -90,7 +90,7 @@ namespace ERManagementSystem.ViewModels
         // Constructor 
 
         public ExaminationViewModel(
-            ExaminationService examinationService,
+            IExaminationService examinationService,
             MockStaffService mockStaffService,
             ERVisitRepository erVisitRepository,
             ExaminationRepository examRepository,

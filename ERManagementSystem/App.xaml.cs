@@ -54,10 +54,12 @@ namespace ERManagementSystem
                     sp.GetRequiredService<ERVisitRepository>(),
                     sp.GetRequiredService<RoomRepository>()));
             services.AddSingleton<NurseService>();
-            services.AddTransient<TriageService>();
+            services.AddTransient<ITriageService, TriageService>();
             services.AddTransient<QueueService>();
             services.AddTransient<RoomAssignmentService>();       // Alex
             services.AddTransient<RoomManagementService>();       // Alex
+            services.AddSingleton<MockStaffService>();
+            services.AddTransient<IExaminationService, ExaminationService>();
             services.AddTransient<ITransferService, TransferService>();
 
             // ── ViewModels ───────────────────────────────────────────────────
@@ -65,6 +67,7 @@ namespace ERManagementSystem
             services.AddTransient<PatientRegistrationViewModel>();
             services.AddTransient<TriageViewModel>();
             services.AddTransient<QueueViewModel>();
+            services.AddTransient<ExaminationViewModel>();
             services.AddTransient<TransferLogViewModel>();
             services.AddTransient<RoomAssignmentViewModel>();     // Alex
             services.AddTransient<RoomManagementViewModel>();     // Alex
@@ -73,6 +76,7 @@ namespace ERManagementSystem
             services.AddTransient<PatientRegistrationView>();
             services.AddTransient<TriageView>();
             services.AddTransient<QueueView>();
+            services.AddTransient<ExaminationView>();
             services.AddTransient<TransferLogView>();
             services.AddTransient<RoomAssignmentView>();          // Alex
             services.AddTransient<RoomManagementView>();          // Alex

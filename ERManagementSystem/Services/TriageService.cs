@@ -1,11 +1,13 @@
 using ERManagementSystem.Models;
 using ERManagementSystem.Repositories;
 using System;
+using System.Collections.Generic;
+using System.Linq;
 using ERManagementSystem.Helpers;
 
 namespace ERManagementSystem.Services
 {
-    public class TriageService
+    public class TriageService : ITriageService
     {
         private readonly TriageRepository _triageRepository;
         private readonly TriageParametersRepository _triageParametersRepository;
@@ -102,6 +104,24 @@ namespace ERManagementSystem.Services
         public Triage? GetByVisitId(int visitId)
         {
             return _triageRepository.GetByVisitId(visitId);
+        }
+
+        public IReadOnlyList<ER_Visit> GetVisitsForTriage()
+        {
+            return _stateService.GetByStatus(ER_Visit.VisitStatus.REGISTERED)
+                .Concat(_stateService.GetByStatus(ER_Visit.VisitStatus.TRIAGED))
+                .OrderBy(visit => visit.Arrival_date_time)
+                .ToList();
+        }
+
+        public void MoveVisitToQueue(int visitId)
+        {
+            _stateService.ChangeVisitStatus(visitId, ER_Visit.VisitStatus.WAITING_FOR_ROOM);
+        }
+
+        public void CloseVisit(int visitId)
+        {
+            _stateService.CloseVisit(visitId);
         }
 
         /// <summary>

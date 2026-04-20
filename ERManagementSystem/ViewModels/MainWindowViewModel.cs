@@ -46,13 +46,15 @@ namespace ERManagementSystem.ViewModels
         [RelayCommand]
         private void ShowExamination()
         {
-            _navigationService.Navigate(typeof(ExaminationView));
+            var vm = App.Services.GetRequiredService<ExaminationViewModel>();
+            _navigationService.Navigate(typeof(ExaminationView), vm);
         }
 
         [RelayCommand]
         private void ShowTransferLog()
         {
-            _navigationService.Navigate(typeof(TransferLogView));
+            var vm = App.Services.GetRequiredService<TransferLogViewModel>();
+            _navigationService.Navigate(typeof(TransferLogView), vm);
         }
 
         [RelayCommand]

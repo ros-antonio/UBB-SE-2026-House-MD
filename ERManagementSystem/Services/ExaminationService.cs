@@ -11,7 +11,7 @@ using ERManagementSystem.Helpers;
 
 namespace ERManagementSystem.Services
 {
-    public class ExaminationService
+    public class ExaminationService : IExaminationService
     {
         private readonly ExaminationRepository _examRepository;
         private readonly ERVisitRepository _erVisitRepository;

@@ -1,12 +1,10 @@
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using ERManagementSystem.Models;
-using ERManagementSystem.Repositories;
 using ERManagementSystem.Services;
 using Microsoft.UI.Xaml.Controls;
 using System;
 using System.Collections.ObjectModel;
-using System.ComponentModel;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -14,15 +12,11 @@ namespace ERManagementSystem.ViewModels
 {
     public partial class TriageViewModel : BaseViewModel
     {
-        private readonly TriageService _triageService;
-        private readonly StateManagementService _stateService;
+        private readonly ITriageService _triageService;
 
-        public TriageViewModel(
-            TriageService triageService,
-            StateManagementService stateService)
+        public TriageViewModel(ITriageService triageService)
         {
             _triageService = triageService;
-            _stateService = stateService;
         }
 
         // ── Observable collections ──────────────────────────────────────────
@@ -96,8 +90,7 @@ namespace ERManagementSystem.ViewModels
         {
             RegisteredVisits.Clear();
 
-            var visits = _stateService.GetByStatus(ER_Visit.VisitStatus.REGISTERED)
-                .Concat(_stateService.GetByStatus(ER_Visit.VisitStatus.TRIAGED));
+            var visits = _triageService.GetVisitsForTriage();
 
             foreach (var v in visits)
                 RegisteredVisits.Add(v);
@@ -174,7 +167,7 @@ namespace ERManagementSystem.ViewModels
 
             try
             {
-                _stateService.ChangeVisitStatus(SelectedVisit.Visit_ID, ER_Visit.VisitStatus.WAITING_FOR_ROOM);
+                _triageService.MoveVisitToQueue(SelectedVisit.Visit_ID);
 
                 await ShowDialog("Moved to Queue",
                     $"Visit {SelectedVisit.Visit_ID} is now WAITING_FOR_ROOM.");
@@ -198,7 +191,7 @@ namespace ERManagementSystem.ViewModels
                 return;
             }
 
-            _stateService.CloseVisit(SelectedVisit.Visit_ID);
+            _triageService.CloseVisit(SelectedVisit.Visit_ID);
 
             await ShowDialog("Visit closed",
                 $"The visit {SelectedVisit.Visit_ID} has been closed!");
