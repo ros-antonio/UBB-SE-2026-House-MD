@@ -1,10 +1,7 @@
-using ERManagementSystem.Repositories;
-using ERManagementSystem.Services;
 using ERManagementSystem.ViewModels;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Navigation;
-using System;
-using System.IO;
 
 namespace ERManagementSystem.Views
 {
@@ -27,18 +24,14 @@ namespace ERManagementSystem.Views
         {
             base.OnNavigatedTo(e);
 
+            if (e.Parameter is TransferLogViewModel transferLogViewModel)
+            {
+                ViewModel = transferLogViewModel;
+            }
+
             if (ViewModel == null)
             {
-                var dbConnection = new DataAccess.DatabaseConnection();
-                var sqlHelper = new Helpers.SqlHelper(dbConnection);
-                var transferDir = Path.Combine(AppContext.BaseDirectory, "transfers");
-                var transferLogRepository = new TransferLogRepository(sqlHelper);
-                var erVisitRepo = new ERVisitRepository(sqlHelper);
-                var roomRepo = new RoomRepository(sqlHelper);
-                // Task 5.13: pass RoomRepository so auto-clean fires on TRANSFERRED/CLOSED
-                var stateSvc = new StateManagementService(erVisitRepo, roomRepo);
-                var transferService = new TransferService(sqlHelper, transferDir, stateSvc);
-                ViewModel = new TransferLogViewModel(transferService, sqlHelper, stateSvc, transferLogRepository);
+                ViewModel = App.Services.GetRequiredService<TransferLogViewModel>();
             }
 
             this.Loaded += (s, args) =>

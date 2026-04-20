@@ -16,7 +16,7 @@ namespace ERManagementSystem.Repositories
     /// Uses SqlHelper. Hand-written SQL only. No ORM.
     /// All SqlDataReader mapping is manual.
     /// </summary>
-    public class TransferLogRepository
+    public class TransferLogRepository : ITransferLogRepository
     {
         private readonly SqlHelper _sqlHelper;
 

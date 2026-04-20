@@ -1,10 +1,7 @@
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
-using ERManagementSystem.Helpers;
 using ERManagementSystem.Models;
-using ERManagementSystem.Repositories;
 using ERManagementSystem.Services;
-using Microsoft.Data.SqlClient;
 using Microsoft.UI.Xaml.Controls;
 using System;
 using System.Collections.ObjectModel;
@@ -27,10 +24,7 @@ namespace ERManagementSystem.ViewModels
     {
         public Action? ClearGridSelection { get; set; }
         public Action? RefreshGrid { get; set; }
-        private readonly TransferLogRepository _transferLogRepository;
-        private readonly StateManagementService _stateManagementService;
-        private readonly TransferService _transferService;
-        private readonly SqlHelper _sqlHelper;
+        private readonly ITransferService _transferService;
 
         // XamlRoot needed to show ContentDialogs — set by the View
         public Microsoft.UI.Xaml.XamlRoot? XamlRoot { get; set; }
@@ -55,13 +49,9 @@ namespace ERManagementSystem.ViewModels
         public bool HasSelectedVisit => SelectedVisit != null;
 
         // Constructor
-        public TransferLogViewModel(TransferService transferService, SqlHelper sqlHelper,
-    StateManagementService stateManagementService, TransferLogRepository transferLogRepository)
+        public TransferLogViewModel(ITransferService transferService)
         {
             _transferService = transferService;
-            _sqlHelper = sqlHelper;
-            _stateManagementService = stateManagementService;
-            _transferLogRepository = transferLogRepository;
         }
 
         // LoadLogs(): void  (Task 6.13)
@@ -99,24 +89,16 @@ namespace ERManagementSystem.ViewModels
 
             var freshList = new ObservableCollection<VisitSummary>();
 
-            const string sql = @"
-        SELECT v.Visit_ID, v.Chief_Complaint, v.Status,
-               p.First_Name, p.Last_Name, p.Transferred
-        FROM dbo.ER_Visit v
-        INNER JOIN dbo.Patient p ON p.Patient_ID = v.Patient_ID
-        WHERE v.Status = 'IN_EXAMINATION'
-        ORDER BY v.Arrival_date_time ASC";
-
-            using var reader = _sqlHelper.ExecuteReader(sql);
-            while (reader.Read())
+            var eligibleVisits = _transferService.GetEligibleVisitsForTransfer();
+            foreach (var eligibleVisit in eligibleVisits)
             {
                 freshList.Add(new VisitSummary
                 {
-                    Visit_ID = reader.GetInt32(0),
-                    Chief_Complaint = reader.GetString(1),
-                    Status = reader.GetString(2),
-                    PatientName = reader.GetString(3) + " " + reader.GetString(4),
-                    Transferred = reader.GetBoolean(5)
+                    Visit_ID = eligibleVisit.VisitId,
+                    Chief_Complaint = eligibleVisit.ChiefComplaint,
+                    Status = eligibleVisit.Status,
+                    PatientName = $"{eligibleVisit.PatientFirstName} {eligibleVisit.PatientLastName}",
+                    Transferred = eligibleVisit.IsTransferred
                 });
             }
 
@@ -238,7 +220,7 @@ namespace ERManagementSystem.ViewModels
 
             try
             {
-                _stateManagementService.CloseVisit(visitId);
+                _transferService.CloseVisit(visitId);
 
                 SelectedVisit.Status = ER_Visit.VisitStatus.CLOSED;
 

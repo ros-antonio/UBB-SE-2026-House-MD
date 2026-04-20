@@ -19,22 +19,24 @@ namespace ERManagementSystem.Services
     /// Task 6.5: stores the file path in the Transfer_Log table
     /// Feature 9: every attempt is logged with SUCCESS / FAILED / RETRYING
     /// </summary>
-    public class TransferService
+    public class TransferService : ITransferService
     {
         private readonly SqlHelper _sqlHelper;
-        private readonly TransferLogRepository _transferLogRepository;
+        private readonly ITransferLogRepository _transferLogRepository;
         private readonly string _transferDirectory;
 
         public const string TARGET_SYSTEM = "Patient Management";
 
         private readonly StateManagementService _stateManagementService;
 
-        public TransferService(SqlHelper sqlHelper, string transferDirectory,
-                               StateManagementService stateManagementService)
+        public TransferService(
+            SqlHelper sqlHelper,
+            ITransferLogRepository transferLogRepository,
+            StateManagementService stateManagementService)
         {
             _sqlHelper = sqlHelper;
-            _transferLogRepository = new TransferLogRepository(sqlHelper);
-            _transferDirectory = transferDirectory;
+            _transferLogRepository = transferLogRepository;
+            _transferDirectory = Path.Combine(AppContext.BaseDirectory, "transfers");
             _stateManagementService = stateManagementService;
             Directory.CreateDirectory(_transferDirectory);
         }
@@ -155,6 +157,48 @@ namespace ERManagementSystem.Services
             _stateManagementService.ChangeVisitStatus(visitId, ER_Visit.VisitStatus.TRANSFERRED);
             Logger.Info($"[TransferService] Visit {visitId} transitioned to TRANSFERRED");
         }
+
+        public void CloseVisit(int visitId)
+        {
+            _stateManagementService.CloseVisit(visitId);
+            Logger.Info($"[TransferService] Visit {visitId} transitioned to CLOSED");
+        }
+
+        public List<TransferEligibleVisit> GetEligibleVisitsForTransfer()
+        {
+            const string sql = @"
+                SELECT v.Visit_ID,
+                       v.Chief_Complaint,
+                       v.Status,
+                       p.First_Name,
+                       p.Last_Name,
+                       p.Transferred
+                FROM dbo.ER_Visit v
+                INNER JOIN dbo.Patient p ON p.Patient_ID = v.Patient_ID
+                WHERE v.Status = @Status
+                ORDER BY v.Arrival_date_time ASC";
+
+            var eligibleVisits = new List<TransferEligibleVisit>();
+            using var reader = _sqlHelper.ExecuteReader(
+                sql,
+                new SqlParameter("@Status", ER_Visit.VisitStatus.IN_EXAMINATION));
+
+            while (reader.Read())
+            {
+                eligibleVisits.Add(new TransferEligibleVisit
+                {
+                    VisitId = reader.GetInt32(0),
+                    ChiefComplaint = reader.GetString(1),
+                    Status = reader.GetString(2),
+                    PatientFirstName = reader.GetString(3),
+                    PatientLastName = reader.GetString(4),
+                    IsTransferred = reader.GetBoolean(5)
+                });
+            }
+
+            return eligibleVisits;
+        }
+
         // Task 6.3 — Build PatientDataPackage via hand-written JOIN query
         private PatientDataPackage BuildPatientDataPackage(int visitId)
         {
