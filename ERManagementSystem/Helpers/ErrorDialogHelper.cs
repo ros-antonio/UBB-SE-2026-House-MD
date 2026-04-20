@@ -1,10 +1,10 @@
-﻿using Microsoft.UI.Xaml;
-using Microsoft.UI.Xaml.Controls;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Microsoft.UI.Xaml;
+using Microsoft.UI.Xaml.Controls;
 
 namespace ERManagementSystem.Helpers
 {
@@ -13,7 +13,9 @@ namespace ERManagementSystem.Helpers
         public static async Task ShowErrorAsync(string title, string message)
         {
             if (App.MainAppWindow?.Content is not FrameworkElement rootElement)
+            {
                 return;
+            }
 
             var dialog = new ContentDialog
             {

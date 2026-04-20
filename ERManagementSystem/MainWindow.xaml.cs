@@ -32,7 +32,9 @@ namespace ERManagementSystem
             NavigationViewSelectionChangedEventArgs args)
         {
             if (args.SelectedItemContainer?.Tag is not string tag)
+            {
                 return;
+            }
 
             switch (tag)
             {

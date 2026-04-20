@@ -8,11 +8,11 @@ namespace ERManagementSystem.Repositories
 {
     public class ERVisitRepository
     {
-        private readonly SqlHelper _sqlHelper;
+        private readonly SqlHelper sqlHelper;
 
         public ERVisitRepository(SqlHelper sqlHelper)
         {
-            _sqlHelper = sqlHelper;
+            this.sqlHelper = sqlHelper;
         }
 
         public void Add(ER_Visit visit)
@@ -34,7 +34,7 @@ namespace ERManagementSystem.Repositories
 
             try
             {
-                using var reader = _sqlHelper.ExecuteReader(query, parameters);
+                using var reader = sqlHelper.ExecuteReader(query, parameters);
                 if (reader.Read())
                 {
                     visit.Visit_ID = Convert.ToInt32(reader["Visit_ID"]);
@@ -59,9 +59,11 @@ namespace ERManagementSystem.Repositories
 
             try
             {
-                using var reader = _sqlHelper.ExecuteReader(query);
+                using var reader = sqlHelper.ExecuteReader(query);
                 while (reader.Read())
+                {
                     visits.Add(MapReaderToERVisit(reader));
+                }
 
                 Logger.Info($"GetActiveVisits returned {visits.Count} visit(s).");
             }
@@ -89,7 +91,7 @@ namespace ERManagementSystem.Repositories
 
             try
             {
-                _sqlHelper.ExecuteNonQuery(query, parameters);
+                sqlHelper.ExecuteNonQuery(query, parameters);
                 Logger.Info($"Visit {visitId} status updated to '{newStatus}' in DB.");
             }
             catch (Exception ex)
@@ -113,9 +115,11 @@ namespace ERManagementSystem.Repositories
 
             try
             {
-                using var reader = _sqlHelper.ExecuteReader(query, parameters);
+                using var reader = sqlHelper.ExecuteReader(query, parameters);
                 if (reader.Read())
+                {
                     return MapReaderToERVisit(reader);
+                }
 
                 Logger.Warning($"GetByVisitId: Visit {visitId} not found.");
                 return null;
@@ -143,9 +147,11 @@ namespace ERManagementSystem.Repositories
 
             try
             {
-                using var reader = _sqlHelper.ExecuteReader(query, parameters);
+                using var reader = sqlHelper.ExecuteReader(query, parameters);
                 while (reader.Read())
+                {
                     visits.Add(MapReaderToERVisit(reader));
+                }
 
                 Logger.Info($"GetByStatus('{status}') returned {visits.Count} visit(s).");
             }
@@ -171,7 +177,7 @@ namespace ERManagementSystem.Repositories
 
             try
             {
-                using var reader = _sqlHelper.ExecuteReader(sql);
+                using var reader = sqlHelper.ExecuteReader(sql);
                 while (reader.Read())
                 {
                     var visit = new ER_Visit
@@ -207,17 +213,15 @@ namespace ERManagementSystem.Repositories
             return list;
         }
 
-        
-
         private static ER_Visit MapReaderToERVisit(SqlDataReader reader)
         {
             return new ER_Visit
             {
                 Visit_ID = Convert.ToInt32(reader["Visit_ID"]),
-                Patient_ID = reader["Patient_ID"].ToString()!,
+                Patient_ID = reader["Patient_ID"].ToString() !,
                 Arrival_date_time = Convert.ToDateTime(reader["Arrival_date_time"]),
-                Chief_Complaint = reader["Chief_Complaint"].ToString()!,
-                Status = reader["Status"].ToString()!
+                Chief_Complaint = reader["Chief_Complaint"].ToString() !,
+                Status = reader["Status"].ToString() !
             };
         }
     }

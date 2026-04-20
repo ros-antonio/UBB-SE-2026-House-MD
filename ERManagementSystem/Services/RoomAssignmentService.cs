@@ -9,32 +9,32 @@ namespace ERManagementSystem.Services
 {
     public class RoomAssignmentService : IRoomAssignmentService
     {
-        private readonly RoomRepository               _roomRepository;
-        private readonly ERVisitRepository            _erVisitRepository;
-        private readonly StateManagementService       _stateManagementService;
-        private readonly TriageParametersRepository   _triageParamsRepository;
-        private readonly PatientRepository            _patientRepository;
-        private readonly TriageRepository             _triageRepository;
+        private readonly RoomRepository roomRepository;
+        private readonly ERVisitRepository erVisitRepository;
+        private readonly StateManagementService stateManagementService;
+        private readonly TriageParametersRepository triageParamsRepository;
+        private readonly PatientRepository patientRepository;
+        private readonly TriageRepository triageRepository;
 
         public RoomAssignmentService(
-            RoomRepository               roomRepository,
-            ERVisitRepository            erVisitRepository,
-            StateManagementService       stateManagementService,
-            TriageParametersRepository   triageParamsRepository,
-            PatientRepository            patientRepository,
-            TriageRepository             triageRepository)
+            RoomRepository roomRepository,
+            ERVisitRepository erVisitRepository,
+            StateManagementService stateManagementService,
+            TriageParametersRepository triageParamsRepository,
+            PatientRepository patientRepository,
+            TriageRepository triageRepository)
         {
-            _roomRepository         = roomRepository;
-            _erVisitRepository      = erVisitRepository;
-            _stateManagementService = stateManagementService;
-            _triageParamsRepository = triageParamsRepository;
-            _patientRepository      = patientRepository;
-            _triageRepository       = triageRepository;
+            this.roomRepository = roomRepository;
+            this.erVisitRepository = erVisitRepository;
+            this.stateManagementService = stateManagementService;
+            this.triageParamsRepository = triageParamsRepository;
+            this.patientRepository = patientRepository;
+            this.triageRepository = triageRepository;
         }
 
         public IReadOnlyList<(ER_Visit visit, Triage triage)> GetWaitingVisitsWithTriage()
         {
-            return _erVisitRepository.GetActiveVisitsWithTriage()
+            return erVisitRepository.GetActiveVisitsWithTriage()
                 .Where(queueEntry => queueEntry.visit.Status == ER_Visit.VisitStatus.WAITING_FOR_ROOM)
                 .OrderBy(queueEntry => queueEntry.triage.Triage_Level)
                 .ThenBy(queueEntry => queueEntry.visit.Arrival_date_time)
@@ -43,54 +43,58 @@ namespace ERManagementSystem.Services
 
         public IReadOnlyList<ER_Room> GetAvailableRooms()
         {
-            return _roomRepository.GetAvailableRooms();
+            return roomRepository.GetAvailableRooms();
         }
 
         public Patient? GetPatientById(string patientId)
         {
-            return _patientRepository.GetById(patientId);
+            return patientRepository.GetById(patientId);
         }
 
         public Triage? GetTriageByVisitId(int visitId)
         {
-            return _triageRepository.GetByVisitId(visitId);
+            return triageRepository.GetByVisitId(visitId);
         }
 
         public ER_Room? FindAvailableRoom(string requiredRoomType)
         {
-            return _roomRepository.GetAvailableRooms()
+            return roomRepository.GetAvailableRooms()
                                   .FirstOrDefault(r => r.Room_Type == requiredRoomType);
         }
 
         public void AssignRoomToVisit(int visitId, int roomId)
         {
-            ER_Room room = _roomRepository.GetById(roomId)
+            ER_Room room = roomRepository.GetById(roomId)
                 ?? throw new InvalidOperationException($"Room {roomId} was not found.");
 
             if (room.Availability_Status != ER_Room.RoomStatus.Available)
+            {
                 throw new InvalidOperationException(
                     $"Room {roomId} is not available (current: '{room.Availability_Status}').");
+            }
 
-            ER_Visit visit = _erVisitRepository.GetByVisitId(visitId)
+            ER_Visit visit = erVisitRepository.GetByVisitId(visitId)
                 ?? throw new InvalidOperationException($"Visit {visitId} was not found.");
 
             if (visit.Status != ER_Visit.VisitStatus.WAITING_FOR_ROOM)
+            {
                 throw new InvalidOperationException(
                     $"Visit {visitId} is not in WAITING_FOR_ROOM (current: '{visit.Status}').");
+            }
 
             UpdateRoomAvailability(roomId, ER_Room.RoomStatus.Occupied);
-            _roomRepository.SetCurrentVisit(roomId, visitId);
-            _stateManagementService.ChangeVisitStatus(visitId, ER_Visit.VisitStatus.IN_ROOM);
+            roomRepository.SetCurrentVisit(roomId, visitId);
+            stateManagementService.ChangeVisitStatus(visitId, ER_Visit.VisitStatus.IN_ROOM);
             Logger.Info($"Visit {visitId} assigned to Room {roomId}.");
         }
 
         public void UpdateRoomAvailability(int roomId, string newStatus)
         {
-            ER_Room room = _roomRepository.GetById(roomId)
+            ER_Room room = roomRepository.GetById(roomId)
                 ?? throw new InvalidOperationException($"Room {roomId} was not found.");
 
             room.UpdateAvailabilityStatus(newStatus);
-            _roomRepository.UpdateAvailabilityStatus(roomId, newStatus);
+            roomRepository.UpdateAvailabilityStatus(roomId, newStatus);
         }
 
         /// <summary>
@@ -105,12 +109,14 @@ namespace ERManagementSystem.Services
             var waitingWithTriage = GetWaitingVisitsWithTriage();
 
             if (waitingWithTriage.Count == 0)
+            {
                 return false;
+            }
 
             var (topVisit, topTriage) = waitingWithTriage.First();
 
-            var parameters = _triageParamsRepository.GetByTriageId(topTriage.Triage_ID);
-            
+            var parameters = triageParamsRepository.GetByTriageId(topTriage.Triage_ID);
+
             // Defaulting parameters to 1 if missing for safety
             int bleeding = parameters?.Bleeding ?? 1;
             int injuryType = parameters?.Injury_Type ?? 1;

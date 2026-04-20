@@ -1,8 +1,8 @@
+using System.ComponentModel;
 using ERManagementSystem.ViewModels;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Data;
 using Microsoft.UI.Xaml.Navigation;
-using System.ComponentModel;
 
 namespace ERManagementSystem.Views
 {
@@ -37,7 +37,9 @@ namespace ERManagementSystem.Views
 
             // Unsubscribe to avoid memory leaks
             if (ViewModel != null)
+            {
                 ViewModel.PropertyChanged -= ViewModel_PropertyChanged;
+            }
         }
 
         private void ViewModel_PropertyChanged(object? sender, PropertyChangedEventArgs e)
@@ -47,7 +49,9 @@ namespace ERManagementSystem.Views
             if (e.PropertyName == nameof(ViewModel.HasDateOfBirth))
             {
                 if (ViewModel?.HasDateOfBirth == false)
+                {
                     DateOfBirthPicker.Date = null;
+                }
             }
 
             // When Gender is reset to empty by ClearForm(),
@@ -55,7 +59,9 @@ namespace ERManagementSystem.Views
             if (e.PropertyName == nameof(ViewModel.Gender))
             {
                 if (string.IsNullOrEmpty(ViewModel?.Gender))
+                {
                     GenderComboBox.SelectedItem = null;
+                }
             }
         }
 
@@ -63,7 +69,10 @@ namespace ERManagementSystem.Views
             CalendarDatePicker sender,
             CalendarDatePickerDateChangedEventArgs args)
         {
-            if (ViewModel == null) return;
+            if (ViewModel == null)
+            {
+                return;
+            }
 
             if (args.NewDate.HasValue)
             {
@@ -78,10 +87,15 @@ namespace ERManagementSystem.Views
 
         private void GenderComboBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            if (ViewModel == null) return;
+            if (ViewModel == null)
+            {
+                return;
+            }
 
             if (sender is ComboBox box && box.SelectedItem is ComboBoxItem item)
+            {
                 ViewModel.Gender = item.Tag?.ToString() ?? string.Empty;
+            }
         }
     }
 }

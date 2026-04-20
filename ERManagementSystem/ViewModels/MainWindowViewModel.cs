@@ -8,60 +8,59 @@ namespace ERManagementSystem.ViewModels
 {
     public partial class MainWindowViewModel : BaseViewModel
     {
-        private readonly INavigationService _navigationService;
+        private readonly INavigationService navigationService;
 
         public MainWindowViewModel(INavigationService navigationService)
         {
-            _navigationService = navigationService;
+            this.navigationService = navigationService;
         }
-
 
         [RelayCommand]
         private void ShowPatientRegistration()
         {
             var vm = App.Services.GetRequiredService<PatientRegistrationViewModel>();
-            _navigationService.Navigate(typeof(PatientRegistrationView), vm);
+            navigationService.Navigate(typeof(PatientRegistrationView), vm);
         }
 
         [RelayCommand]
         private void ShowQueue()
         {
             var vm = App.Services.GetRequiredService<QueueViewModel>();
-            _navigationService.Navigate(typeof(QueueView), vm);
+            navigationService.Navigate(typeof(QueueView), vm);
         }
 
         [RelayCommand]
         private void ShowTriage()
         {
             var vm = App.Services.GetRequiredService<TriageViewModel>();
-            _navigationService.Navigate(typeof(TriageView), vm);
+            navigationService.Navigate(typeof(TriageView), vm);
         }
 
         [RelayCommand]
         private void ShowRoomAssignment()
         {
             var vm = App.Services.GetRequiredService<RoomAssignmentViewModel>();
-            _navigationService.Navigate(typeof(RoomAssignmentView), vm);
+            navigationService.Navigate(typeof(RoomAssignmentView), vm);
         }
 
         [RelayCommand]
         private void ShowExamination()
         {
             var vm = App.Services.GetRequiredService<ExaminationViewModel>();
-            _navigationService.Navigate(typeof(ExaminationView), vm);
+            navigationService.Navigate(typeof(ExaminationView), vm);
         }
 
         [RelayCommand]
         private void ShowTransferLog()
         {
             var vm = App.Services.GetRequiredService<TransferLogViewModel>();
-            _navigationService.Navigate(typeof(TransferLogView), vm);
+            navigationService.Navigate(typeof(TransferLogView), vm);
         }
 
         [RelayCommand]
         private void ShowRoomManagement()
         {
-            _navigationService.Navigate(typeof(RoomManagementView));
+            navigationService.Navigate(typeof(RoomManagementView));
         }
     }
 }

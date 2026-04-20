@@ -10,12 +10,12 @@ namespace ERManagementSystem.Services
     public class NurseService
     {
         // Simulated external data source
-        private readonly List<NurseMock> _nurses;
+        private readonly List<NurseMock> nurses;
 
         public NurseService()
         {
             // Hardcoded list based on "external system"
-            _nurses = new List<NurseMock>
+            nurses = new List<NurseMock>
             {
                 new NurseMock { Nurse_ID = 1, Availability_Status = false },
                 new NurseMock { Nurse_ID = 2, Availability_Status = true },
@@ -29,10 +29,12 @@ namespace ERManagementSystem.Services
         /// </summary>
         public int? RequestAvailableNurse()
         {
-            var nurse = _nurses.FirstOrDefault(n => n.Availability_Status);
+            var nurse = nurses.FirstOrDefault(n => n.Availability_Status);
 
             if (nurse == null)
-                return null; 
+            {
+                return null;
+            }
 
             return nurse.Nurse_ID;
         }

@@ -8,25 +8,27 @@ namespace ERManagementSystem.Services
 {
     public class StateManagementService
     {
-        private readonly ERVisitRepository _erVisitRepository;
-        private readonly RoomRepository?   _roomRepository;   
+        private readonly ERVisitRepository erVisitRepository;
+        private readonly RoomRepository? roomRepository;
 
         public StateManagementService(ERVisitRepository erVisitRepository)
         {
-            _erVisitRepository = erVisitRepository;
+            this.erVisitRepository = erVisitRepository;
         }
 
-        
         public StateManagementService(ERVisitRepository erVisitRepository, RoomRepository roomRepository)
         {
-            _erVisitRepository = erVisitRepository;
-            _roomRepository    = roomRepository;
+            this.erVisitRepository = erVisitRepository;
+            this.roomRepository = roomRepository;
         }
 
         public bool CanTransitionTo(string currentStatus, string newStatus)
         {
             if (!ER_Visit.ValidTransitions.ContainsKey(currentStatus))
+            {
                 return false;
+            }
+
             return ER_Visit.ValidTransitions[currentStatus].Contains(newStatus);
         }
 
@@ -51,7 +53,7 @@ namespace ERManagementSystem.Services
 
         public void ChangeVisitStatus(int visitId, string newStatus)
         {
-            ER_Visit? visit = _erVisitRepository.GetByVisitId(visitId);
+            ER_Visit? visit = erVisitRepository.GetByVisitId(visitId);
 
             if (visit == null)
             {
@@ -64,7 +66,7 @@ namespace ERManagementSystem.Services
             try
             {
                 ChangeStatus(visit, newStatus);
-                _erVisitRepository.UpdateStatus(visitId, newStatus);
+                erVisitRepository.UpdateStatus(visitId, newStatus);
                 Logger.Info($"Visit {visitId} status changed: '{oldStatus}' → '{newStatus}'.");
             }
             catch (InvalidOperationException ex)
@@ -74,27 +76,29 @@ namespace ERManagementSystem.Services
             }
 
             // Task 5.13 — auto-set room to cleaning when a visit ends
-            if (_roomRepository != null &&
+            if (roomRepository != null &&
                 (newStatus == ER_Visit.VisitStatus.TRANSFERRED ||
                  newStatus == ER_Visit.VisitStatus.CLOSED))
             {
                 try
                 {
                     // Primary: look up via Examination table (patient had a doctor)
-                    int? roomId = _roomRepository.GetRoomIdByVisitId(visitId);
+                    int? roomId = roomRepository.GetRoomIdByVisitId(visitId);
 
                     // Fallback: look up via Current_Visit_ID (patient never reached examination)
                     if (!roomId.HasValue)
-                        roomId = _roomRepository.GetRoomIdByCurrentVisit(visitId);
+                    {
+                        roomId = roomRepository.GetRoomIdByCurrentVisit(visitId);
+                    }
 
                     if (roomId.HasValue)
                     {
-                        ER_Room? room = _roomRepository.GetById(roomId.Value);
+                        ER_Room? room = roomRepository.GetById(roomId.Value);
                         if (room != null && room.Availability_Status == ER_Room.RoomStatus.Occupied)
                         {
                             room.UpdateAvailabilityStatus(ER_Room.RoomStatus.Cleaning);
-                            _roomRepository.UpdateAvailabilityStatus(roomId.Value, ER_Room.RoomStatus.Cleaning);
-                            _roomRepository.ClearCurrentVisit(roomId.Value);
+                            roomRepository.UpdateAvailabilityStatus(roomId.Value, ER_Room.RoomStatus.Cleaning);
+                            roomRepository.ClearCurrentVisit(roomId.Value);
                             Logger.Info($"Task 5.13: Room {roomId.Value} auto-set to cleaning after Visit {visitId} → '{newStatus}'.");
                         }
                     }
@@ -118,7 +122,7 @@ namespace ERManagementSystem.Services
 
         public void CloseVisit(int visitId)
         {
-            ER_Visit? visit = _erVisitRepository.GetByVisitId(visitId);
+            ER_Visit? visit = erVisitRepository.GetByVisitId(visitId);
 
             if (visit == null)
             {
@@ -140,6 +144,6 @@ namespace ERManagementSystem.Services
         }
 
         public List<ER_Visit> GetByStatus(string status)
-            => _erVisitRepository.GetByStatus(status);
+            => erVisitRepository.GetByStatus(status);
     }
 }

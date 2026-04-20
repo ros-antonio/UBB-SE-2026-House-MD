@@ -10,7 +10,7 @@ namespace ERManagementSystem.Repositories
     /// Task 6.2 - TransferLogRepository.
     ///   Add(log: Transfer_Log): void
     ///   GetByVisitId(id: int): List
-    ///   GetAll(): List           
+    ///   GetAll(): List
     ///   DeleteLog(log: Transfer_Log): void
     ///
     /// Uses SqlHelper. Hand-written SQL only. No ORM.
@@ -18,11 +18,11 @@ namespace ERManagementSystem.Repositories
     /// </summary>
     public class TransferLogRepository : ITransferLogRepository
     {
-        private readonly SqlHelper _sqlHelper;
+        private readonly SqlHelper sqlHelper;
 
         public TransferLogRepository(SqlHelper sqlHelper)
         {
-            _sqlHelper = sqlHelper;
+            this.sqlHelper = sqlHelper;
         }
 
         /// <summary>
@@ -45,13 +45,17 @@ namespace ERManagementSystem.Repositories
                 new SqlParameter("@FilePath", (object?)log.FilePath ?? DBNull.Value)
             };
 
-            using var reader = _sqlHelper.ExecuteReader(sql, parameters);
+            using var reader = sqlHelper.ExecuteReader(sql, parameters);
             if (reader.Read())
+            {
                 log.Transfer_ID = reader.GetInt32(0);
+            }
+
             Logger.Info($"[TransferLogRepository] Added log entry {log.Transfer_ID} for Visit {log.Visit_ID}, Status={log.Status}");
         }
 
-        // GetByVisitId(id: int): List 
+        // GetByVisitId(id: int): List
+
         /// <summary>
         /// SELECT all Transfer_Log entries for a given Visit_ID.
         /// Results ordered newest first.
@@ -65,16 +69,19 @@ namespace ERManagementSystem.Repositories
                 ORDER BY Transfer_Time DESC";
 
             var logs = new List<Transfer_Log>();
-            using var reader = _sqlHelper.ExecuteReader(sql,
+            using var reader = sqlHelper.ExecuteReader(sql,
                 new SqlParameter("@VisitId", id));
 
             while (reader.Read())
+            {
                 logs.Add(MapFromReader(reader));
+            }
 
             return logs;
         }
 
-        // GetAll(): List 
+        // GetAll(): List
+
         /// <summary>
         /// SELECT all Transfer_Log entries across all visits.
         /// Ordered newest first.
@@ -87,14 +94,17 @@ namespace ERManagementSystem.Repositories
                 ORDER BY Transfer_Time DESC";
 
             var logs = new List<Transfer_Log>();
-            using var reader = _sqlHelper.ExecuteReader(sql);
+            using var reader = sqlHelper.ExecuteReader(sql);
             while (reader.Read())
+            {
                 logs.Add(MapFromReader(reader));
+            }
 
             return logs;
         }
 
-        // DeleteLog(log: Transfer_Log): void 
+        // DeleteLog(log: Transfer_Log): void
+
         /// <summary>
         /// DELETE a Transfer_Log entry by its Transfer_ID.
         /// </summary>
@@ -102,7 +112,7 @@ namespace ERManagementSystem.Repositories
         {
             const string sql = "DELETE FROM dbo.Transfer_Log WHERE Transfer_ID = @TransferId";
 
-            _sqlHelper.ExecuteNonQuery(sql,
+            sqlHelper.ExecuteNonQuery(sql,
                 new SqlParameter("@TransferId", log.Transfer_ID));
             Logger.Info($"[TransferLogRepository] Deleted log entry {log.Transfer_ID}");
         }
@@ -115,7 +125,7 @@ namespace ERManagementSystem.Repositories
                 SET Status = @Status
                 WHERE Transfer_ID = @TransferId";
 
-            _sqlHelper.ExecuteNonQuery(sql,
+            sqlHelper.ExecuteNonQuery(sql,
                 new SqlParameter("@Status", newStatus),
                 new SqlParameter("@TransferId", transferId));
             Logger.Info($"[TransferLogRepository] Updated log {transferId} to status '{newStatus}'");

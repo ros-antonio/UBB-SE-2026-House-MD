@@ -26,19 +26,18 @@ namespace ERManagementSystem.ViewModels
     /// </summary>
     public partial class ExaminationViewModel : ObservableObject
     {
-        private readonly IExaminationService _examinationService;
-        private readonly MockStaffService _mockStaffService;
-        private readonly ERVisitRepository _erVisitRepository;
-        private readonly ExaminationRepository _examRepository;
-        private readonly TriageRepository _triageRepository;
-        private readonly TriageParametersRepository _triageParamsRepo;
-        private readonly RoomRepository? _roomRepository;   // Task 5.13: resolve correct Room_ID
+        private readonly IExaminationService examinationService;
+        private readonly MockStaffService mockStaffService;
+        private readonly ERVisitRepository erVisitRepository;
+        private readonly ExaminationRepository examRepository;
+        private readonly TriageRepository triageRepository;
+        private readonly TriageParametersRepository triageParamsRepo;
+        private readonly RoomRepository? roomRepository;   // Task 5.13: resolve correct Room_ID
 
         // XamlRoot needed to show ContentDialogs — set by the View
         public Microsoft.UI.Xaml.XamlRoot? XamlRoot { get; set; }
 
-        // Observable Properties 
-
+        // Observable Properties
         [ObservableProperty]
         [NotifyCanExecuteChangedFor(nameof(RequestDoctorCommand))]
         [NotifyCanExecuteChangedFor(nameof(SaveExaminationCommand))]
@@ -60,17 +59,16 @@ namespace ERManagementSystem.ViewModels
         private string doctorSpecialty = string.Empty;
 
         [ObservableProperty]
-        private ObservableCollection<ER_Visit> eligibleVisits = new();
+        private ObservableCollection<ER_Visit> eligibleVisits = new ();
 
         [ObservableProperty]
         private string statusMessage = string.Empty;
 
         // Task 4.10: Examination History
         [ObservableProperty]
-        private ObservableCollection<Examination> examinationHistory = new();
+        private ObservableCollection<Examination> examinationHistory = new ();
 
         // Task 4.14: Triage Details
-
         [ObservableProperty]
         private string triageLevelDisplay = string.Empty;
 
@@ -81,14 +79,13 @@ namespace ERManagementSystem.ViewModels
         private string triageNurseId = string.Empty;
 
         // Triage Detail visibility mechanismve state
-        private Microsoft.UI.Xaml.DispatcherTimer _autoSaveTimer;
-        private string _lastSavedNotes = string.Empty;
-        
+        private Microsoft.UI.Xaml.DispatcherTimer autoSaveTimer;
+        private string lastSavedNotes = string.Empty;
+
         [ObservableProperty]
         private string savedTimeDisplay = string.Empty;
 
-        // Constructor 
-
+        // Constructor
         public ExaminationViewModel(
             IExaminationService examinationService,
             MockStaffService mockStaffService,
@@ -96,32 +93,32 @@ namespace ERManagementSystem.ViewModels
             ExaminationRepository examRepository,
             TriageRepository triageRepository,
             TriageParametersRepository triageParamsRepo,
-            RoomRepository? roomRepository = null)   // optional — Task 5.13
+            RoomRepository? roomRepository = null) // optional — Task 5.13
         {
-            _examinationService = examinationService;
-            _mockStaffService = mockStaffService;
-            _erVisitRepository = erVisitRepository;
-            _examRepository = examRepository;
-            _triageRepository = triageRepository;
-            _triageParamsRepo = triageParamsRepo;
-            _roomRepository = roomRepository;
+            this.examinationService = examinationService;
+            this.mockStaffService = mockStaffService;
+            this.erVisitRepository = erVisitRepository;
+            this.examRepository = examRepository;
+            this.triageRepository = triageRepository;
+            this.triageParamsRepo = triageParamsRepo;
+            this.roomRepository = roomRepository;
 
             // Task 4.13: Initialize 10s auto-save timer
-            _autoSaveTimer = new Microsoft.UI.Xaml.DispatcherTimer();
-            _autoSaveTimer.Interval = TimeSpan.FromSeconds(10);
-            _autoSaveTimer.Tick += AutoSaveTimer_Tick;
-            _autoSaveTimer.Start();
+            autoSaveTimer = new Microsoft.UI.Xaml.DispatcherTimer();
+            autoSaveTimer.Interval = TimeSpan.FromSeconds(10);
+            autoSaveTimer.Tick += AutoSaveTimer_Tick;
+            autoSaveTimer.Start();
         }
 
         private void AutoSaveTimer_Tick(object? sender, object e)
         {
-            if (SelectedVisit != null && Notes != _lastSavedNotes)
+            if (SelectedVisit != null && Notes != lastSavedNotes)
             {
                 var existingExam = ExaminationHistory.FirstOrDefault(e => e.Visit_ID == SelectedVisit.Visit_ID);
                 if (existingExam != null)
                 {
-                    _examRepository.UpdateNotes(existingExam.Exam_ID, Notes);
-                    _lastSavedNotes = Notes;
+                    examRepository.UpdateNotes(existingExam.Exam_ID, Notes);
+                    lastSavedNotes = Notes;
 
                     existingExam.Notes = Notes;
 
@@ -137,8 +134,7 @@ namespace ERManagementSystem.ViewModels
             SavedTimeDisplay = string.Empty;
         }
 
-        //  Task 4.9: CanExecute methods 
-
+        // Task 4.9: CanExecute methods
         private bool CanRequestDoctor()
             => SelectedVisit != null && SelectedVisit.Status == ER_Visit.VisitStatus.IN_ROOM;
 
@@ -156,10 +152,8 @@ namespace ERManagementSystem.ViewModels
             return SelectedVisit != null && SelectedVisit.Status == ER_Visit.VisitStatus.IN_EXAMINATION;
         }
 
-
         // LoadData [RelayCommand]
         // Loads visits with status IN_ROOM and WAITING_FOR_DOCTOR.
-
         [RelayCommand]
         public void LoadData()
         {
@@ -172,8 +166,8 @@ namespace ERManagementSystem.ViewModels
             StatusMessage = string.Empty;
             ClearTriageDetails();
 
-            var inRoom = _erVisitRepository.GetByStatus(ER_Visit.VisitStatus.IN_ROOM);
-            var waiting = _erVisitRepository.GetByStatus(ER_Visit.VisitStatus.WAITING_FOR_DOCTOR);
+            var inRoom = erVisitRepository.GetByStatus(ER_Visit.VisitStatus.IN_ROOM);
+            var waiting = erVisitRepository.GetByStatus(ER_Visit.VisitStatus.WAITING_FOR_DOCTOR);
 
             var allEligible = inRoom.Concat(waiting).OrderBy(v => v.Arrival_date_time);
 
@@ -183,7 +177,7 @@ namespace ERManagementSystem.ViewModels
             }
         }
 
-        // When SelectedVisit changes, show assigned doctor if applicable 
+        // When SelectedVisit changes, show assigned doctor if applicable
         partial void OnSelectedVisitChanged(ER_Visit? value)
         {
             if (value == null)
@@ -198,7 +192,7 @@ namespace ERManagementSystem.ViewModels
             }
 
             ExaminationHistory.Clear();
-            var history = _examRepository.GetByPatientId(value.Patient_ID);
+            var history = examRepository.GetByPatientId(value.Patient_ID);
             foreach (var exam in history)
             {
                 ExaminationHistory.Add(exam);
@@ -224,7 +218,7 @@ namespace ERManagementSystem.ViewModels
                 if (existingExam != null)
                 {
                     DoctorId = existingExam.Doctor_ID;
-                    var doctor = _mockStaffService.GetDoctorByID(DoctorId);
+                    var doctor = mockStaffService.GetDoctorByID(DoctorId);
                     DoctorName = doctor.Name;
                     DoctorSpecialty = doctor.Specialty;
                     Notes = existingExam.Notes;
@@ -232,15 +226,15 @@ namespace ERManagementSystem.ViewModels
                 else
                 {
                     // No Examination record yet. Recover the doctor ID dynamically.
-                    var triage = _triageRepository.GetByVisitId(value.Visit_ID);
+                    var triage = triageRepository.GetByVisitId(value.Visit_ID);
                     if (triage != null && !string.IsNullOrEmpty(triage.Specialization))
                     {
                         // Even if Triage Parameters are corrupted/missing in the seed, we can still recover the doctor.
-                        var triageParams = _triageParamsRepo.GetByTriageId(triage.Triage_ID);
-                        int recoveredDoctorId = _mockStaffService.RequestDoctor(triage.Specialization, triageParams ?? new ERManagementSystem.Models.Triage_Parameters());
-                        
+                        var triageParams = triageParamsRepo.GetByTriageId(triage.Triage_ID);
+                        int recoveredDoctorId = mockStaffService.RequestDoctor(triage.Specialization, triageParams ?? new ERManagementSystem.Models.Triage_Parameters());
+
                         DoctorId = recoveredDoctorId;
-                        var doctor = _mockStaffService.GetDoctorByID(recoveredDoctorId);
+                        var doctor = mockStaffService.GetDoctorByID(recoveredDoctorId);
                         DoctorName = doctor.Name;
                         DoctorSpecialty = doctor.Specialty;
                     }
@@ -265,19 +259,20 @@ namespace ERManagementSystem.ViewModels
             }
 
             // Sync notes for auto-save baseline
-            _lastSavedNotes = Notes;
+            lastSavedNotes = Notes;
         }
 
-        // Task 4.14: Triage Details helpers 
+        // Task 4.14: Triage Details helpers
+
         /// <summary>
         /// Task 4.14: Load all triage details for a visit using repository models.
         /// </summary>
         private void LoadTriageDetails(int visitId)
         {
-            var triage = _triageRepository.GetByVisitId(visitId);
+            var triage = triageRepository.GetByVisitId(visitId);
             if (triage != null)
             {
-                var triageParams = _triageParamsRepo.GetByTriageId(triage.Triage_ID);
+                var triageParams = triageParamsRepo.GetByTriageId(triage.Triage_ID);
                 if (triageParams != null)
                 {
                     TriageLevelDisplay = $"Level {triage.Triage_Level}";
@@ -303,14 +298,17 @@ namespace ERManagementSystem.ViewModels
         [RelayCommand(CanExecute = nameof(CanRequestDoctor))]
         public async Task RequestDoctor()
         {
-            if (SelectedVisit == null) return;
+            if (SelectedVisit == null)
+            {
+                return;
+            }
 
             try
             {
                 int visitId = SelectedVisit.Visit_ID;
-                int assignedDoctorId = _examinationService.RequestDoctor(visitId);
+                int assignedDoctorId = examinationService.RequestDoctor(visitId);
 
-                var doctor = _mockStaffService.GetDoctorByID(assignedDoctorId);
+                var doctor = mockStaffService.GetDoctorByID(assignedDoctorId);
 
                 StatusMessage = $"Doctor {doctor.Name} ({doctor.Specialty}) assigned.";
 
@@ -341,27 +339,30 @@ namespace ERManagementSystem.ViewModels
             }
         }
 
-        // SaveExamination [RelayCommand] 
+        // SaveExamination [RelayCommand]
         // Task 4.4 / 4.8: Save the examination record and transition
         // WAITING_FOR_DOCTOR → IN_EXAMINATION.
         [RelayCommand(CanExecute = nameof(CanSaveExamination))]
         public async Task SaveExamination()
         {
-            if (SelectedVisit == null) return;
+            if (SelectedVisit == null)
+            {
+                return;
+            }
 
             try
             {
                 // Task 5.13: use the actual room assigned to this visit so the auto-clean hook
                 // in StateManagementService.ChangeVisitStatus() can find the right room later.
                 int assignedRoomId;
-                if (_roomRepository != null)
+                if (roomRepository != null)
                 {
-                    assignedRoomId = _roomRepository.GetAssignedRoomIdForVisit(SelectedVisit.Visit_ID)
-                                     ?? _examRepository.GetFirstRoomId();
+                    assignedRoomId = roomRepository.GetAssignedRoomIdForVisit(SelectedVisit.Visit_ID)
+                                     ?? examRepository.GetFirstRoomId();
                 }
                 else
                 {
-                    assignedRoomId = _examRepository.GetFirstRoomId();
+                    assignedRoomId = examRepository.GetFirstRoomId();
                 }
 
                 var examination = new Examination
@@ -373,7 +374,7 @@ namespace ERManagementSystem.ViewModels
                     Notes = Notes
                 };
 
-                _examinationService.SaveExamination(examination);
+                examinationService.SaveExamination(examination);
 
                 await ShowDialog("Examination Saved",
                     $"Examination for Visit {SelectedVisit.Visit_ID} has been saved.\n" +
@@ -399,7 +400,7 @@ namespace ERManagementSystem.ViewModels
                 }
 
                 // Sync notes for auto-save baseline
-                _lastSavedNotes = Notes;
+                lastSavedNotes = Notes;
             }
             catch (Exception ex)
             {
@@ -407,11 +408,14 @@ namespace ERManagementSystem.ViewModels
             }
         }
 
-        // Task 4.12: Examination Summary [RelayCommand] 
+        // Task 4.12: Examination Summary [RelayCommand]
         [RelayCommand(CanExecute = nameof(CanViewSummary))]
         public async Task ViewSummary()
         {
-            if (SelectedVisit == null || XamlRoot == null) return;
+            if (SelectedVisit == null || XamlRoot == null)
+            {
+                return;
+            }
 
             var existingExam = ExaminationHistory.FirstOrDefault(e => e.Visit_ID == SelectedVisit.Visit_ID);
             if (existingExam == null)
@@ -420,7 +424,7 @@ namespace ERManagementSystem.ViewModels
                 return;
             }
 
-            var summary = _examRepository.GetExaminationSummary(existingExam.Exam_ID);
+            var summary = examRepository.GetExaminationSummary(existingExam.Exam_ID);
             if (summary == null)
             {
                 await ShowDialog("Error", "Could not aggregate summary data to display.");
@@ -428,28 +432,34 @@ namespace ERManagementSystem.ViewModels
             }
 
             // Assign doctor name
-            var doctor = _mockStaffService.GetDoctorByID(summary.DoctorId);
+            var doctor = mockStaffService.GetDoctorByID(summary.DoctorId);
             summary.AssignedDoctorName = $"{doctor.Name} ({doctor.Specialty})";
 
             var contentPanel = new Microsoft.UI.Xaml.Controls.StackPanel { Spacing = 10 };
 
-            contentPanel.Children.Add(new Microsoft.UI.Xaml.Controls.TextBlock { 
-                Text = $"Patient: {summary.FirstName} {summary.LastName}", FontWeight = Microsoft.UI.Text.FontWeights.Bold, FontSize = 16 
+            contentPanel.Children.Add(new Microsoft.UI.Xaml.Controls.TextBlock
+            {
+                Text = $"Patient: {summary.FirstName} {summary.LastName}", FontWeight = Microsoft.UI.Text.FontWeights.Bold, FontSize = 16
             });
-            contentPanel.Children.Add(new Microsoft.UI.Xaml.Controls.TextBlock { 
+            contentPanel.Children.Add(new Microsoft.UI.Xaml.Controls.TextBlock
+            {
                 Text = $"Arrival: {summary.ArrivalDateTime}  |  Chief Complaint: {summary.ChiefComplaint}"
             });
-            contentPanel.Children.Add(new Microsoft.UI.Xaml.Controls.TextBlock { 
-                Text = $"\n--- TRIAGE DETAILS ---", FontWeight = Microsoft.UI.Text.FontWeights.SemiBold 
+            contentPanel.Children.Add(new Microsoft.UI.Xaml.Controls.TextBlock
+            {
+                Text = $"\n--- TRIAGE DETAILS ---", FontWeight = Microsoft.UI.Text.FontWeights.SemiBold
             });
-            contentPanel.Children.Add(new Microsoft.UI.Xaml.Controls.TextBlock { 
+            contentPanel.Children.Add(new Microsoft.UI.Xaml.Controls.TextBlock
+            {
                 Text = $"Level {summary.TriageLevel} ({summary.Specialization})\nSeverity Score: {summary.SeverityScore}\n" +
                        $"Vitals: C:{summary.Consciousness} Br:{summary.Breathing} Bl:{summary.Bleeding} Inj:{summary.InjuryType} Pn:{summary.PainLevel}"
             });
-            contentPanel.Children.Add(new Microsoft.UI.Xaml.Controls.TextBlock { 
-                Text = $"\n--- EXAMINATION ---", FontWeight = Microsoft.UI.Text.FontWeights.SemiBold 
+            contentPanel.Children.Add(new Microsoft.UI.Xaml.Controls.TextBlock
+            {
+                Text = $"\n--- EXAMINATION ---", FontWeight = Microsoft.UI.Text.FontWeights.SemiBold
             });
-            contentPanel.Children.Add(new Microsoft.UI.Xaml.Controls.TextBlock { 
+            contentPanel.Children.Add(new Microsoft.UI.Xaml.Controls.TextBlock
+            {
                 Text = $"Doctor: {summary.AssignedDoctorName}\nExam Time: {summary.ExamTime}\n\nNotes:\n{summary.Notes}",
                 TextWrapping = Microsoft.UI.Xaml.TextWrapping.Wrap
             });
@@ -465,10 +475,13 @@ namespace ERManagementSystem.ViewModels
             await dialog.ShowAsync();
         }
 
-        // Helper: WinUI 3 ContentDialog 
+        // Helper: WinUI 3 ContentDialog
         private async System.Threading.Tasks.Task ShowDialog(string title, string message)
         {
-            if (XamlRoot == null) return;
+            if (XamlRoot == null)
+            {
+                return;
+            }
 
             var dialog = new ContentDialog
             {

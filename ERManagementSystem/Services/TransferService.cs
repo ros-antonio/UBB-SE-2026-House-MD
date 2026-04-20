@@ -21,28 +21,29 @@ namespace ERManagementSystem.Services
     /// </summary>
     public class TransferService : ITransferService
     {
-        private readonly SqlHelper _sqlHelper;
-        private readonly ITransferLogRepository _transferLogRepository;
-        private readonly string _transferDirectory;
+        private readonly SqlHelper sqlHelper;
+        private readonly ITransferLogRepository transferLogRepository;
+        private readonly string transferDirectory;
 
         public const string TARGET_SYSTEM = "Patient Management";
 
-        private readonly StateManagementService _stateManagementService;
+        private readonly StateManagementService stateManagementService;
 
         public TransferService(
             SqlHelper sqlHelper,
             ITransferLogRepository transferLogRepository,
             StateManagementService stateManagementService)
         {
-            _sqlHelper = sqlHelper;
-            _transferLogRepository = transferLogRepository;
-            _transferDirectory = Path.Combine(AppContext.BaseDirectory, "transfers");
-            _stateManagementService = stateManagementService;
-            Directory.CreateDirectory(_transferDirectory);
+            this.sqlHelper = sqlHelper;
+            this.transferLogRepository = transferLogRepository;
+            transferDirectory = Path.Combine(AppContext.BaseDirectory, "transfers");
+            this.stateManagementService = stateManagementService;
+            Directory.CreateDirectory(transferDirectory);
         }
 
         // SendPatientData(visitId: int): Transfer_Log
         // Tasks 6.4 & 6.5
+
         /// <summary>
         /// Builds the patient data package, serializes to JSON, saves to local file
         /// Task 6.5: stores the file path in the log entry
@@ -67,7 +68,7 @@ namespace ERManagementSystem.Services
                 var options = new JsonSerializerOptions { WriteIndented = true };
                 string json = JsonSerializer.Serialize(package, options);
                 string fileName = $"transfer_visit_{visitId}_{DateTime.Now:yyyyMMdd_HHmmss}.json";
-                string filePath = Path.Combine(_transferDirectory, fileName);
+                string filePath = Path.Combine(transferDirectory, fileName);
                 File.WriteAllText(filePath, json);
 
                 // Task 6.5: store the file path in the log
@@ -80,17 +81,18 @@ namespace ERManagementSystem.Services
                 log.Status = "FAILED";
                 log.FilePath = null;
                 Logger.Error($"[TransferService] SendPatientData failed for Visit {visitId}", ex);
-                _transferLogRepository.Add(log);
+                transferLogRepository.Add(log);
                 throw;
             }
 
             // Task 6.6 — persist log entry
-            _transferLogRepository.Add(log);
+            transferLogRepository.Add(log);
             return log;
         }
 
-        // LogTransfer(int, status: string): void 
+        // LogTransfer(int, status: string): void
         // Task 6.6
+
         /// <summary>
         /// Creates and persists a Transfer_Log entry with the given visitId and status.
         /// Each attempt is a separate log row.
@@ -106,21 +108,23 @@ namespace ERManagementSystem.Services
             };
             log.Validate();
             Logger.Info($"[TransferService] Transfer logged for Visit {visitId} with status '{status}'");
-            _transferLogRepository.Add(log);
+            transferLogRepository.Add(log);
         }
 
-        // GetLogs(visitId: int): List 
+        // GetLogs(visitId: int): List
         // Task 6.12
+
         /// <summary>
         /// Returns all Transfer_Log entries for a visit.
         /// Called by TransferLogViewModel.LoadLogs().
         /// </summary>
         public List<Transfer_Log> GetLogs(int visitId)
         {
-            return _transferLogRepository.GetByVisitId(visitId);
+            return transferLogRepository.GetByVisitId(visitId);
         }
 
         // Task 6.11 — Retry mechanism
+
         /// <summary>
         /// Logs a RETRYING entry, then re-attempts SendPatientData.
         /// Each attempt is a separate log row.
@@ -133,6 +137,7 @@ namespace ERManagementSystem.Services
         }
 
         // Task 6.10 — Mark Patient.Transferred = true
+
         /// <summary>
         /// Sets Patient.Transferred = 1 after a successful transfer.
         /// Hand-written UPDATE query via SqlHelper.
@@ -146,7 +151,7 @@ namespace ERManagementSystem.Services
                     SELECT Patient_ID FROM dbo.ER_Visit WHERE Visit_ID = @VisitId
                 )";
 
-            _sqlHelper.ExecuteNonQuery(sql,
+            sqlHelper.ExecuteNonQuery(sql,
                 new SqlParameter("@VisitId", visitId));
             Logger.Info($"[TransferService] Patient marked as transferred for Visit {visitId}");
         }
@@ -154,13 +159,13 @@ namespace ERManagementSystem.Services
         // Task 6.10 — Transition visit IN_EXAMINATION → TRANSFERRED
         public void TransitionVisitToTransferred(int visitId)
         {
-            _stateManagementService.ChangeVisitStatus(visitId, ER_Visit.VisitStatus.TRANSFERRED);
+            stateManagementService.ChangeVisitStatus(visitId, ER_Visit.VisitStatus.TRANSFERRED);
             Logger.Info($"[TransferService] Visit {visitId} transitioned to TRANSFERRED");
         }
 
         public void CloseVisit(int visitId)
         {
-            _stateManagementService.CloseVisit(visitId);
+            stateManagementService.CloseVisit(visitId);
             Logger.Info($"[TransferService] Visit {visitId} transitioned to CLOSED");
         }
 
@@ -179,7 +184,7 @@ namespace ERManagementSystem.Services
                 ORDER BY v.Arrival_date_time ASC";
 
             var eligibleVisits = new List<TransferEligibleVisit>();
-            using var reader = _sqlHelper.ExecuteReader(
+            using var reader = sqlHelper.ExecuteReader(
                 sql,
                 new SqlParameter("@Status", ER_Visit.VisitStatus.IN_EXAMINATION));
 
@@ -232,11 +237,13 @@ namespace ERManagementSystem.Services
                 LEFT  JOIN dbo.Examination       e  ON e.Visit_ID    = v.Visit_ID
                 WHERE v.Visit_ID = @VisitId";
 
-            using var reader = _sqlHelper.ExecuteReader(sql,
+            using var reader = sqlHelper.ExecuteReader(sql,
                 new SqlParameter("@VisitId", visitId));
 
             if (!reader.Read())
+            {
                 throw new InvalidOperationException($"No visit found with ID {visitId}.");
+            }
 
             return new PatientDataPackage
             {
@@ -251,7 +258,7 @@ namespace ERManagementSystem.Services
                 Arrival_date_time = reader.GetDateTime(reader.GetOrdinal("Arrival_date_time")),
                 Chief_Complaint = reader.GetString(reader.GetOrdinal("Chief_Complaint")),
                 Triage_Level = reader.IsDBNull(reader.GetOrdinal("Triage_Level")) ? 0 : reader.GetInt32(reader.GetOrdinal("Triage_Level")),
-                Specialization = reader.IsDBNull(reader.GetOrdinal("Specialization")) ? "" : reader.GetString(reader.GetOrdinal("Specialization")),
+                Specialization = reader.IsDBNull(reader.GetOrdinal("Specialization")) ? string.Empty : reader.GetString(reader.GetOrdinal("Specialization")),
                 Nurse_ID = reader.IsDBNull(reader.GetOrdinal("Nurse_ID")) ? 0 : reader.GetInt32(reader.GetOrdinal("Nurse_ID")),
                 Consciousness = reader.IsDBNull(reader.GetOrdinal("Consciousness")) ? 0 : reader.GetInt32(reader.GetOrdinal("Consciousness")),
                 Breathing = reader.IsDBNull(reader.GetOrdinal("Breathing")) ? 0 : reader.GetInt32(reader.GetOrdinal("Breathing")),

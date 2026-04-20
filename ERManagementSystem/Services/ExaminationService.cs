@@ -13,12 +13,12 @@ namespace ERManagementSystem.Services
 {
     public class ExaminationService : IExaminationService
     {
-        private readonly ExaminationRepository _examRepository;
-        private readonly ERVisitRepository _erVisitRepository;
-        private readonly TriageRepository _triageRepository;
-        private readonly MockStaffService _mockStaffService;
-        private readonly StateManagementService _stateManagementService;
-        private readonly TriageParametersRepository _triageParamsRepo;
+        private readonly ExaminationRepository examRepository;
+        private readonly ERVisitRepository erVisitRepository;
+        private readonly TriageRepository triageRepository;
+        private readonly MockStaffService mockStaffService;
+        private readonly StateManagementService stateManagementService;
+        private readonly TriageParametersRepository triageParamsRepo;
 
         public ExaminationService(
             ExaminationRepository examRepository,
@@ -28,12 +28,12 @@ namespace ERManagementSystem.Services
             StateManagementService stateManagementService,
             TriageParametersRepository triageParamsRepo)
         {
-            _examRepository = examRepository;
-            _erVisitRepository = erVisitRepository;
-            _triageRepository = triageRepository;
-            _mockStaffService = mockStaffService;
-            _stateManagementService = stateManagementService;
-            _triageParamsRepo = triageParamsRepo;
+            this.examRepository = examRepository;
+            this.erVisitRepository = erVisitRepository;
+            this.triageRepository = triageRepository;
+            this.mockStaffService = mockStaffService;
+            this.stateManagementService = stateManagementService;
+            this.triageParamsRepo = triageParamsRepo;
         }
 
         /// <summary>
@@ -45,7 +45,7 @@ namespace ERManagementSystem.Services
         /// </summary>
         public int RequestDoctor(int visitID)
         {
-            var triage = _triageRepository.GetByVisitId(visitID);
+            var triage = triageRepository.GetByVisitId(visitID);
 
             if (triage == null)
             {
@@ -53,7 +53,7 @@ namespace ERManagementSystem.Services
                 throw new Exception($"Triage record not found for visit {visitID}");
             }
 
-            var triageParameters = _triageParamsRepo.GetByTriageId(triage.Triage_ID);
+            var triageParameters = triageParamsRepo.GetByTriageId(triage.Triage_ID);
 
             if (triageParameters == null)
             {
@@ -61,11 +61,11 @@ namespace ERManagementSystem.Services
                 throw new Exception($"Triage parameters not found for triage {triage.Triage_ID}");
             }
 
-            int assignedDoctorId = _mockStaffService.RequestDoctor(
+            int assignedDoctorId = mockStaffService.RequestDoctor(
                 triage.Specialization,
                 triageParameters);
 
-            _stateManagementService.ChangeVisitStatus(visitID, ER_Visit.VisitStatus.WAITING_FOR_DOCTOR);
+            stateManagementService.ChangeVisitStatus(visitID, ER_Visit.VisitStatus.WAITING_FOR_DOCTOR);
             Logger.Info($"Visit {visitID} transitioned to WAITING_FOR_DOCTOR.");
 
             return assignedDoctorId;
@@ -77,9 +77,9 @@ namespace ERManagementSystem.Services
         /// </summary>
         public void SaveExamination(Examination exam)
         {
-            _examRepository.Add(exam);
-            _stateManagementService.ChangeVisitStatus(exam.Visit_ID, ER_Visit.VisitStatus.IN_EXAMINATION);
+            examRepository.Add(exam);
+            stateManagementService.ChangeVisitStatus(exam.Visit_ID, ER_Visit.VisitStatus.IN_EXAMINATION);
             Logger.Info($"Visit {exam.Visit_ID} transitioned to IN_EXAMINATION following saved examination.");
         }
-    }        
+    }
 }

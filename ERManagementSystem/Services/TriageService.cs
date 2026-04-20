@@ -1,18 +1,18 @@
-using ERManagementSystem.Models;
-using ERManagementSystem.Repositories;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using ERManagementSystem.Helpers;
+using ERManagementSystem.Models;
+using ERManagementSystem.Repositories;
 
 namespace ERManagementSystem.Services
 {
     public class TriageService : ITriageService
     {
-        private readonly TriageRepository _triageRepository;
-        private readonly TriageParametersRepository _triageParametersRepository;
-        private readonly NurseService _nurseService;
-        private readonly StateManagementService _stateService;
+        private readonly TriageRepository triageRepository;
+        private readonly TriageParametersRepository triageParametersRepository;
+        private readonly NurseService nurseService;
+        private readonly StateManagementService stateService;
 
         public TriageService(
             TriageRepository triageRepository,
@@ -20,10 +20,10 @@ namespace ERManagementSystem.Services
             NurseService nurseService,
             StateManagementService stateService)
         {
-            _triageRepository = triageRepository;
-            _triageParametersRepository = triageParametersRepository;
-            _nurseService = nurseService;
-            _stateService = stateService;
+            this.triageRepository = triageRepository;
+            this.triageParametersRepository = triageParametersRepository;
+            this.nurseService = nurseService;
+            this.stateService = stateService;
         }
 
         /// <summary>
@@ -31,15 +31,15 @@ namespace ERManagementSystem.Services
         /// </summary>
         public int? RequestAvailableNurse()
         {
-            return _nurseService.RequestAvailableNurse();
+            return nurseService.RequestAvailableNurse();
         }
 
         /// <summary>
         /// Creates and persists the triage parameters record.
         /// </summary>
-        public void CreateTriageParameters(Triage_Parameters parameters) //de schimbat la diagrama UML nu trebuie transmis si id-ul
+        public void CreateTriageParameters(Triage_Parameters parameters) // de schimbat la diagrama UML nu trebuie transmis si id-ul
         {
-            _triageParametersRepository.Add(parameters);
+            triageParametersRepository.Add(parameters);
         }
 
         /// <summary>
@@ -53,7 +53,6 @@ namespace ERManagementSystem.Services
         /// </summary>
         public Triage CreateTriage(int visitId, Triage_Parameters parameters)
         {
-
             parameters.ValidateParameters();
 
             Logger.Info($"[TriageService] Starting triage for visit {visitId}");
@@ -81,14 +80,14 @@ namespace ERManagementSystem.Services
                     Triage_Time = DateTime.Now
                 };
 
-                int triageId = _triageRepository.Add(triage);
+                int triageId = triageRepository.Add(triage);
 
                 parameters.Triage_ID = triageId;
-                _triageParametersRepository.Add(parameters);
+                triageParametersRepository.Add(parameters);
 
                 triage.Triage_ID = triageId;
 
-                _stateService.ChangeVisitStatus(visitId, ER_Visit.VisitStatus.TRIAGED);
+                stateService.ChangeVisitStatus(visitId, ER_Visit.VisitStatus.TRIAGED);
 
                 Logger.Info($"[TriageService] Completed triage {triageId} for visit {visitId}");
 
@@ -103,25 +102,25 @@ namespace ERManagementSystem.Services
 
         public Triage? GetByVisitId(int visitId)
         {
-            return _triageRepository.GetByVisitId(visitId);
+            return triageRepository.GetByVisitId(visitId);
         }
 
         public IReadOnlyList<ER_Visit> GetVisitsForTriage()
         {
-            return _stateService.GetByStatus(ER_Visit.VisitStatus.REGISTERED)
-                .Concat(_stateService.GetByStatus(ER_Visit.VisitStatus.TRIAGED))
+            return stateService.GetByStatus(ER_Visit.VisitStatus.REGISTERED)
+                .Concat(stateService.GetByStatus(ER_Visit.VisitStatus.TRIAGED))
                 .OrderBy(visit => visit.Arrival_date_time)
                 .ToList();
         }
 
         public void MoveVisitToQueue(int visitId)
         {
-            _stateService.ChangeVisitStatus(visitId, ER_Visit.VisitStatus.WAITING_FOR_ROOM);
+            stateService.ChangeVisitStatus(visitId, ER_Visit.VisitStatus.WAITING_FOR_ROOM);
         }
 
         public void CloseVisit(int visitId)
         {
-            _stateService.CloseVisit(visitId);
+            stateService.CloseVisit(visitId);
         }
 
         /// <summary>
@@ -139,7 +138,7 @@ namespace ERManagementSystem.Services
         ///   (injury_type x 2) +
         ///   (pain_level x 1)
         ///
-        /// 
+        ///
         ///  <=11   => Level 5
         /// - 12-15 => Level 4
         /// - 16-19 => Level 3
@@ -165,13 +164,19 @@ namespace ERManagementSystem.Services
                 (parameters.Pain_Level * 1);
 
             if (severityScore >= 20)
+            {
                 return 2;
+            }
 
             if (severityScore >= 16)
+            {
                 return 3;
+            }
 
             if (severityScore >= 12)
+            {
                 return 4;
+            }
 
             return 5;
         }
@@ -191,21 +196,26 @@ namespace ERManagementSystem.Services
         public string DetermineSpecialization(Triage_Parameters parameters)
         {
             if (parameters.Bleeding == 3 || parameters.Injury_Type == 3)
+            {
                 return "General Surgery";
+            }
 
             if (parameters.Injury_Type == 2)
+            {
                 return "Orthopedics";
+            }
 
             if (parameters.Breathing == 2)
+            {
                 return "Pulmonology";
+            }
 
             if (parameters.Consciousness == 2 || parameters.Consciousness == 3)
+            {
                 return "Neurology";
+            }
 
             return "Emergency Medicine";
         }
-
     }
-
-
 }

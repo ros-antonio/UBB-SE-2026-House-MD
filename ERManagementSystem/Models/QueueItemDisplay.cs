@@ -16,7 +16,9 @@ namespace ERManagementSystem.Models
         public DateTime ArrivalTime { get; set; }
         public string Status { get; set; } = string.Empty;
 
-        public QueueItemDisplay() { }
+        public QueueItemDisplay()
+        {
+        }
 
         public QueueItemDisplay(ER_Visit visit, Triage triage)
         {

@@ -1,32 +1,30 @@
+using System;
+using System.Collections.ObjectModel;
+using System.Linq;
+using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using ERManagementSystem.Models;
 using ERManagementSystem.Services;
 using Microsoft.UI.Xaml.Controls;
-using System;
-using System.Collections.ObjectModel;
-using System.Linq;
-using System.Threading.Tasks;
 
 namespace ERManagementSystem.ViewModels
 {
     public partial class TriageViewModel : BaseViewModel
     {
-        private readonly ITriageService _triageService;
+        private readonly ITriageService triageService;
 
         public TriageViewModel(ITriageService triageService)
         {
-            _triageService = triageService;
+            this.triageService = triageService;
         }
 
         // ── Observable collections ──────────────────────────────────────────
-        public ObservableCollection<ER_Visit> RegisteredVisits { get; } = new();
+        public ObservableCollection<ER_Visit> RegisteredVisits { get; } = new ObservableCollection<ER_Visit>();
 
         // ── Selected visit ──────────────────────────────────────────────────
         [ObservableProperty]
         private ER_Visit? selectedVisit;
-
-
 
         // ── Triage parameters (1-3 each) ────────────────────────────────────
         [ObservableProperty]
@@ -58,8 +56,7 @@ namespace ERManagementSystem.ViewModels
         public bool IsNotTriaged => !IsTriaged;
 
         // ── Last triage result (needed for display) ─────────────────────────
-        private Triage? _lastTriageResult;
-
+        private Triage? lastTriageResult;
 
         partial void OnSelectedVisitChanged(ER_Visit? value)
         {
@@ -73,7 +70,7 @@ namespace ERManagementSystem.ViewModels
 
             if (IsTriaged)
             {
-                var triage = _triageService.GetByVisitId(value.Visit_ID);
+                var triage = triageService.GetByVisitId(value.Visit_ID);
 
                 if (triage != null)
                 {
@@ -84,16 +81,17 @@ namespace ERManagementSystem.ViewModels
         }
 
         // ── Commands ────────────────────────────────────────────────────────
-
         [RelayCommand]
         private void LoadVisitsForTriage()
         {
             RegisteredVisits.Clear();
 
-            var visits = _triageService.GetVisitsForTriage();
+            var visits = triageService.GetVisitsForTriage();
 
             foreach (var v in visits)
+            {
                 RegisteredVisits.Add(v);
+            }
         }
 
         [RelayCommand]
@@ -121,8 +119,6 @@ namespace ERManagementSystem.ViewModels
                 return;
             }
 
-            
-
             try
             {
                 var parameters = new Triage_Parameters
@@ -134,10 +130,10 @@ namespace ERManagementSystem.ViewModels
                     Pain_Level = PainLevel
                 };
 
-                _lastTriageResult = _triageService.CreateTriage(SelectedVisit.Visit_ID, parameters);
+                lastTriageResult = triageService.CreateTriage(SelectedVisit.Visit_ID, parameters);
 
-                CalculatedSeverity = _lastTriageResult.Triage_Level;
-                CalculatedSpecialization = _lastTriageResult.Specialization;
+                CalculatedSeverity = lastTriageResult.Triage_Level;
+                CalculatedSpecialization = lastTriageResult.Specialization;
                 IsTriaged = true;
 
                 await ShowDialog("Triage Complete",
@@ -163,11 +159,14 @@ namespace ERManagementSystem.ViewModels
         [RelayCommand]
         private async Task MoveToQueue()
         {
-            if (SelectedVisit == null) return;
+            if (SelectedVisit == null)
+            {
+                return;
+            }
 
             try
             {
-                _triageService.MoveVisitToQueue(SelectedVisit.Visit_ID);
+                triageService.MoveVisitToQueue(SelectedVisit.Visit_ID);
 
                 await ShowDialog("Moved to Queue",
                     $"Visit {SelectedVisit.Visit_ID} is now WAITING_FOR_ROOM.");
@@ -191,7 +190,7 @@ namespace ERManagementSystem.ViewModels
                 return;
             }
 
-            _triageService.CloseVisit(SelectedVisit.Visit_ID);
+            triageService.CloseVisit(SelectedVisit.Visit_ID);
 
             await ShowDialog("Visit closed",
                 $"The visit {SelectedVisit.Visit_ID} has been closed!");
@@ -200,7 +199,6 @@ namespace ERManagementSystem.ViewModels
         }
 
         // ── Helpers ─────────────────────────────────────────────────────────
-
         private void ResetForm()
         {
             SelectedVisit = null;
@@ -212,7 +210,7 @@ namespace ERManagementSystem.ViewModels
             CalculatedSeverity = 0;
             CalculatedSpecialization = string.Empty;
             IsTriaged = false;
-            _lastTriageResult = null;
+            lastTriageResult = null;
         }
 
         private Microsoft.UI.Xaml.XamlRoot? GetXamlRoot()

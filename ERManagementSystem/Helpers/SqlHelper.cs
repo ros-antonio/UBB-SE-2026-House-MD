@@ -1,21 +1,21 @@
-﻿using ERManagementSystem.DataAccess;
+﻿using System.Data;
+using ERManagementSystem.DataAccess;
 using Microsoft.Data.SqlClient;
-using System.Data;
 
 namespace ERManagementSystem.Helpers
 {
     public class SqlHelper
     {
-        private readonly DatabaseConnection _databaseConnection;
+        private readonly DatabaseConnection databaseConnection;
 
         public SqlHelper(DatabaseConnection databaseConnection)
         {
-            _databaseConnection = databaseConnection;
+            this.databaseConnection = databaseConnection;
         }
 
         public SqlDataReader ExecuteReader(string sql, params SqlParameter[] parameters)
         {
-            var connection = _databaseConnection.Open();
+            var connection = databaseConnection.Open();
             var command = new SqlCommand(sql, connection);
 
             if (parameters != null && parameters.Length > 0)
@@ -35,7 +35,7 @@ namespace ERManagementSystem.Helpers
         */
         public int ExecuteNonQuery(string sql, params SqlParameter[] parameters)
         {
-            using var connection = _databaseConnection.Open();
+            using var connection = databaseConnection.Open();
             using var command = new SqlCommand(sql, connection);
 
             if (parameters != null && parameters.Length > 0)

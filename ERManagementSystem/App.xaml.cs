@@ -1,3 +1,5 @@
+using System;
+using System.Threading.Tasks;
 using ERManagementSystem.DataAccess;
 using ERManagementSystem.Helpers;
 using ERManagementSystem.Repositories;
@@ -6,8 +8,6 @@ using ERManagementSystem.ViewModels;
 using ERManagementSystem.Views;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.UI.Xaml;
-using System;
-using System.Threading.Tasks;
 
 namespace ERManagementSystem
 {
@@ -104,8 +104,7 @@ namespace ERManagementSystem
 
             await ErrorDialogHelper.ShowErrorAsync(
                 "Unexpected Error",
-                "Something went wrong. The error was logged."
-            );
+                "Something went wrong. The error was logged.");
         }
 
         private void CurrentDomain_UnhandledException(object? sender, System.UnhandledExceptionEventArgs e)

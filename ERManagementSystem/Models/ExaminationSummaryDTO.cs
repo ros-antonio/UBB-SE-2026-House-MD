@@ -7,7 +7,7 @@ namespace ERManagementSystem.Models
         // Patient Info
         public string FirstName { get; set; } = string.Empty;
         public string LastName { get; set; } = string.Empty;
-        
+
         // Visit Info
         public DateTime ArrivalDateTime { get; set; }
         public string ChiefComplaint { get; set; } = string.Empty;

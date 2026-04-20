@@ -49,12 +49,10 @@ namespace ERManagementSystem.Views
             }
         }
 
-
         // ─────────────────────────────────────────────
-        // Public method — call this to load visit data
-        // Pass triage as null if not yet triaged
+        // Public method — call this to load visit data.
+        // Pass triage as null if not yet triaged.
         // ─────────────────────────────────────────────
-
         public void LoadVisit(Patient? patient, ER_Visit? visit, Triage? triage = null)
         {
             if (patient == null || visit == null)
@@ -95,9 +93,8 @@ namespace ERManagementSystem.Views
         }
 
         // ─────────────────────────────────────────────
-        // Timeline builder
+        // Timeline builder.
         // ─────────────────────────────────────────────
-
         private static List<TimelineItem> BuildTimeline(string currentStatus)
         {
             var states = new[]
@@ -133,16 +130,18 @@ namespace ERManagementSystem.Views
                     BadgeVisibility = isCurrent ? Visibility.Visible : Visibility.Collapsed
                 });
 
-                if (isCurrent) passedCurrent = true;
+                if (isCurrent)
+                {
+                    passedCurrent = true;
+                }
             }
 
             return items;
         }
 
         // ─────────────────────────────────────────────
-        // Clear
+        // Clear.
         // ─────────────────────────────────────────────
-
         private void ClearPanel()
         {
             FullNameText.Text = string.Empty;
@@ -160,14 +159,13 @@ namespace ERManagementSystem.Views
     }
 
     // ─────────────────────────────────────────────
-    // Timeline item helper class
+    // Timeline item helper class.
     // ─────────────────────────────────────────────
-
     public class TimelineItem
     {
         public string Label { get; set; } = string.Empty;
-        public SolidColorBrush DotColor { get; set; } = new(Colors.Gray);
-        public SolidColorBrush TextColor { get; set; } = new(Colors.Gray);
+        public SolidColorBrush DotColor { get; set; } = new SolidColorBrush(Colors.Gray);
+        public SolidColorBrush TextColor { get; set; } = new SolidColorBrush(Colors.Gray);
         public string Weight { get; set; } = "Normal";
         public Visibility BadgeVisibility { get; set; } = Visibility.Collapsed;
     }

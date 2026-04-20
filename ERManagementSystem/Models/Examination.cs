@@ -32,16 +32,24 @@ namespace ERManagementSystem.Models
             errors = new List<string>();
 
             if (Exam_ID <= 0)
+            {
                 errors.Add("Exam_ID must be a positive integer.");
+            }
 
             if (Visit_ID <= 0)
+            {
                 errors.Add("Visit_ID is required and must be valid.");
+            }
 
             if (Doctor_ID <= 0)
+            {
                 errors.Add("Doctor_ID is required.");
+            }
 
             if (Room_ID <= 0)
+            {
                 errors.Add("Room_ID is required.");
+            }
 
             if (string.IsNullOrWhiteSpace(Notes))
             {

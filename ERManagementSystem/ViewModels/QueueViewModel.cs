@@ -9,21 +9,21 @@ namespace ERManagementSystem.ViewModels
 {
     public partial class QueueViewModel : BaseViewModel
     {
-        private readonly IQueueService _queueService;
+        private readonly IQueueService queueService;
 
         public QueueViewModel(IQueueService queueService)
         {
-            _queueService = queueService;
+            this.queueService = queueService;
         }
 
         // ── Observable collection for DataGrid ──────────────────────────────
-        public ObservableCollection<QueueItemDisplay> ActiveVisits { get; } = new();
+        public ObservableCollection<QueueItemDisplay> ActiveVisits { get; } = new ObservableCollection<QueueItemDisplay>();
 
         [RelayCommand]
         private void LoadQueue()
         {
             ActiveVisits.Clear();
-            var queue = _queueService.GetOrderedQueue();
+            var queue = queueService.GetOrderedQueue();
             foreach (var (visit, triage) in queue)
             {
                 ActiveVisits.Add(new QueueItemDisplay(visit, triage));

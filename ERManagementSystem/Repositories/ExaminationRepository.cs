@@ -1,18 +1,18 @@
+using System;
+using System.Collections.Generic;
 using ERManagementSystem.Helpers;
 using ERManagementSystem.Models;
 using Microsoft.Data.SqlClient;
-using System;
-using System.Collections.Generic;
 
 namespace ERManagementSystem.Repositories
 {
     public class ExaminationRepository
     {
-        private readonly SqlHelper _sqlHelper;
+        private readonly SqlHelper sqlHelper;
 
         public ExaminationRepository(SqlHelper sqlHelper)
         {
-            _sqlHelper = sqlHelper;
+            this.sqlHelper = sqlHelper;
         }
 
         // Inserts a new Examination record into the database.
@@ -32,7 +32,7 @@ namespace ERManagementSystem.Repositories
 
             try
             {
-                _sqlHelper.ExecuteNonQuery(sql, parameters);
+                sqlHelper.ExecuteNonQuery(sql, parameters);
                 Logger.Info($"Successfully added new examination record for Visit {exam.Visit_ID}.");
             }
             catch (Exception ex)
@@ -41,8 +41,6 @@ namespace ERManagementSystem.Repositories
                 throw;
             }
         }
-
-
 
         // Retrieves a list of Examination records by Patient_ID (full history).
         public List<Examination> GetByPatientId(string patientId)
@@ -60,7 +58,7 @@ namespace ERManagementSystem.Repositories
                 new SqlParameter("@Patient_ID", patientId)
             };
 
-            using var reader = _sqlHelper.ExecuteReader(sql, parameters);
+            using var reader = sqlHelper.ExecuteReader(sql, parameters);
 
             while (reader.Read())
             {
@@ -91,7 +89,7 @@ namespace ERManagementSystem.Repositories
 
             try
             {
-                _sqlHelper.ExecuteNonQuery(sql, parameters);
+                sqlHelper.ExecuteNonQuery(sql, parameters);
                 Logger.Info($"Successfully auto-saved notes for examination {examId}.");
             }
             catch (Exception ex)
@@ -125,7 +123,7 @@ namespace ERManagementSystem.Repositories
 
             try
             {
-                using var reader = _sqlHelper.ExecuteReader(sql, parameters);
+                using var reader = sqlHelper.ExecuteReader(sql, parameters);
                 if (reader.Read())
                 {
                     return new ExaminationSummaryDTO
@@ -160,12 +158,12 @@ namespace ERManagementSystem.Repositories
         public int GetFirstRoomId()
         {
             string query = "SELECT TOP 1 Room_ID FROM dbo.ER_Room";
-            using var reader = _sqlHelper.ExecuteReader(query);
+            using var reader = sqlHelper.ExecuteReader(query);
             if (reader.Read())
             {
                 return reader.GetInt32(0);
             }
-            return 1; 
+            return 1;
         }
     }
 }

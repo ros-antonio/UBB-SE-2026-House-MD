@@ -28,8 +28,6 @@ namespace ERManagementSystem.Services
             };
         }
 
-
-
         public Doctor GetDoctorByID(int doctorID)
         {
             return doctorID switch

@@ -8,11 +8,11 @@ namespace ERManagementSystem.Repositories
 {
     public class PatientRepository
     {
-        private readonly SqlHelper _sqlHelper;
+        private readonly SqlHelper sqlHelper;
 
         public PatientRepository(SqlHelper sqlHelper)
         {
-            _sqlHelper = sqlHelper;
+            this.sqlHelper = sqlHelper;
         }
 
         public void Add(Patient patient)
@@ -39,7 +39,7 @@ namespace ERManagementSystem.Repositories
 
             try
             {
-                _sqlHelper.ExecuteNonQuery(query, parameters);
+                sqlHelper.ExecuteNonQuery(query, parameters);
                 Logger.Info($"Patient {patient.Patient_ID} ({patient.First_Name} {patient.Last_Name}) added to DB.");
             }
             catch (Exception ex)
@@ -64,7 +64,7 @@ namespace ERManagementSystem.Repositories
 
             try
             {
-                using var reader = _sqlHelper.ExecuteReader(query, parameters);
+                using var reader = sqlHelper.ExecuteReader(query, parameters);
                 if (reader.Read())
                 {
                     var patient = MapReaderToPatient(reader);
@@ -109,7 +109,7 @@ namespace ERManagementSystem.Repositories
 
             try
             {
-                _sqlHelper.ExecuteNonQuery(query, parameters);
+                sqlHelper.ExecuteNonQuery(query, parameters);
                 Logger.Info($"Patient {patient.Patient_ID} updated in DB.");
             }
             catch (Exception ex)
@@ -132,7 +132,7 @@ namespace ERManagementSystem.Repositories
 
             try
             {
-                _sqlHelper.ExecuteNonQuery(query, parameters);
+                sqlHelper.ExecuteNonQuery(query, parameters);
                 Logger.Info($"Patient {patient.Patient_ID} deleted from DB.");
             }
             catch (Exception ex)

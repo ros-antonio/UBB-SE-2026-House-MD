@@ -28,7 +28,7 @@ namespace ERManagementSystem.Helpers
                     3 => new SolidColorBrush(Color.FromArgb(255, 234, 179, 8)),   // Yellow
                     4 => new SolidColorBrush(Color.FromArgb(255, 22, 163, 74)),   // Green
                     5 => new SolidColorBrush(Color.FromArgb(255, 37, 99, 235)),   // Blue
-                    _ => new SolidColorBrush(Color.FromArgb(255, 156, 163, 175))  // Gray
+                    _ => new SolidColorBrush(Color.FromArgb(255, 156, 163, 175)) // Gray
                 };
             }
             return new SolidColorBrush(Color.FromArgb(255, 156, 163, 175)); // Gray fallback

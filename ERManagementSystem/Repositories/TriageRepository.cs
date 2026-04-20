@@ -1,17 +1,17 @@
-﻿using ERManagementSystem.Helpers;
+﻿using System;
+using ERManagementSystem.Helpers;
 using ERManagementSystem.Models;
 using Microsoft.Data.SqlClient;
-using System;
 
 namespace ERManagementSystem.Repositories
 {
     public class TriageRepository
     {
-        private readonly SqlHelper _sqlHelper;
+        private readonly SqlHelper sqlHelper;
 
         public TriageRepository(SqlHelper sqlHelper)
         {
-            _sqlHelper = sqlHelper;
+            this.sqlHelper = sqlHelper;
         }
 
         public int Add(Triage triage)
@@ -34,7 +34,7 @@ namespace ERManagementSystem.Repositories
 
             try
             {
-                using var reader = _sqlHelper.ExecuteReader(sql, parameters);
+                using var reader = sqlHelper.ExecuteReader(sql, parameters);
 
                 if (reader.Read())
                 {
@@ -66,9 +66,9 @@ namespace ERManagementSystem.Repositories
                 new SqlParameter("@Visit_ID", visitId)
             };
 
-            using var reader = _sqlHelper.ExecuteReader(sql, parameters);
+            using var reader = sqlHelper.ExecuteReader(sql, parameters);
 
-            if (reader.Read())  
+            if (reader.Read())
             {
                 return new Triage
                 {
@@ -87,7 +87,9 @@ namespace ERManagementSystem.Repositories
         public void Delete(Triage triage)
         {
             if (triage == null || triage.Triage_ID <= 0)
+            {
                 throw new ArgumentException("Invalid Triage object.");
+            }
 
             string sql = "DELETE FROM Triage WHERE Triage_ID = @Triage_ID";
 
@@ -96,7 +98,7 @@ namespace ERManagementSystem.Repositories
                 new SqlParameter("@Triage_ID", triage.Triage_ID)
             };
 
-            _sqlHelper.ExecuteNonQuery(sql, parameters);
+            sqlHelper.ExecuteNonQuery(sql, parameters);
         }
     }
 }

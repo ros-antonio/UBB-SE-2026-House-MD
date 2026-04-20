@@ -47,19 +47,29 @@ namespace ERManagementSystem.Models
         public void ValidateParameters()
         {
             if (Consciousness < 1 || Consciousness > 3)
+            {
                 throw new ArgumentOutOfRangeException(nameof(Consciousness), "Consciousness must be between 1 (normal) and 3 (most critical).");
+            }
 
             if (Breathing < 1 || Breathing > 3)
+            {
                 throw new ArgumentOutOfRangeException(nameof(Breathing), "Breathing must be between 1 (normal) and 3 (most critical).");
+            }
 
             if (Bleeding < 1 || Bleeding > 3)
+            {
                 throw new ArgumentOutOfRangeException(nameof(Bleeding), "Bleeding must be between 1 (normal) and 3 (most critical).");
+            }
 
             if (Injury_Type < 1 || Injury_Type > 3)
+            {
                 throw new ArgumentOutOfRangeException(nameof(Injury_Type), "Injury_Type must be between 1 (normal) and 3 (most critical).");
+            }
 
             if (Pain_Level < 1 || Pain_Level > 3)
+            {
                 throw new ArgumentOutOfRangeException(nameof(Pain_Level), "Pain_Level must be between 1 (normal) and 3 (most critical).");
+            }
         }
     }
 }

@@ -11,14 +11,12 @@ namespace ERManagementSystem.ViewModels
 {
     public partial class PatientRegistrationViewModel : BaseViewModel
     {
-        private readonly RegistrationService _registrationService;
+        private readonly RegistrationService registrationService;
 
         public PatientRegistrationViewModel(RegistrationService registrationService)
         {
-            _registrationService = registrationService;
+            this.registrationService = registrationService;
         }
-
-   
 
         [ObservableProperty]
         private string patientId = string.Empty;
@@ -47,8 +45,6 @@ namespace ERManagementSystem.ViewModels
         [ObservableProperty]
         private string chiefComplaint = string.Empty;
 
-
-
         [ObservableProperty]
         private string patientIdError = string.Empty;
 
@@ -69,11 +65,7 @@ namespace ERManagementSystem.ViewModels
 
         [ObservableProperty]
         private string chiefComplaintError = string.Empty;
-
-
-        private bool _submitAttempted = false;
-
-    
+        private bool submitAttempted = false;
 
         partial void OnPatientIdChanged(string value) => ValidateAll();
         partial void OnFirstNameChanged(string value) => ValidateAll();
@@ -83,9 +75,6 @@ namespace ERManagementSystem.ViewModels
         partial void OnPhoneChanged(string value) => ValidateAll();
         partial void OnEmergencyContactChanged(string value) => ValidateAll();
         partial void OnChiefComplaintChanged(string value) => ValidateAll();
-
-   
-
         private bool ValidateAll()
         {
             bool valid = true;
@@ -93,101 +82,155 @@ namespace ERManagementSystem.ViewModels
             // Patient ID — exactly 13 digits
             if (string.IsNullOrWhiteSpace(PatientId))
             {
-                if (_submitAttempted) PatientIdError = "Patient ID (CNP) is required.";
+                if (submitAttempted)
+                {
+                    PatientIdError = "Patient ID (CNP) is required.";
+                }
+
                 valid = false;
             }
             else if (!Regex.IsMatch(PatientId, @"^\d{13}$"))
             {
-                if (_submitAttempted) PatientIdError = "CNP must be exactly 13 digits.";
+                if (submitAttempted)
+                {
+                    PatientIdError = "CNP must be exactly 13 digits.";
+                }
+
                 valid = false;
             }
             else
+            {
                 PatientIdError = string.Empty;
+            }
 
             // First Name
             if (string.IsNullOrWhiteSpace(FirstName))
             {
-                if (_submitAttempted) FirstNameError = "First name is required.";
+                if (submitAttempted)
+                {
+                    FirstNameError = "First name is required.";
+                }
+
                 valid = false;
             }
             else
+            {
                 FirstNameError = string.Empty;
+            }
 
             // Last Name
             if (string.IsNullOrWhiteSpace(LastName))
             {
-                if (_submitAttempted) LastNameError = "Last name is required.";
+                if (submitAttempted)
+                {
+                    LastNameError = "Last name is required.";
+                }
+
                 valid = false;
             }
             else
+            {
                 LastNameError = string.Empty;
+            }
 
             // Date of Birth
             if (!HasDateOfBirth)
             {
-                if (_submitAttempted) DateOfBirthError = "Date of birth is required.";
+                if (submitAttempted)
+                {
+                    DateOfBirthError = "Date of birth is required.";
+                }
+
                 valid = false;
             }
             else if (DateOfBirth >= DateTimeOffset.Now)
             {
-                if (_submitAttempted) DateOfBirthError = "Date of birth must be in the past.";
+                if (submitAttempted)
+                {
+                    DateOfBirthError = "Date of birth must be in the past.";
+                }
+
                 valid = false;
             }
             else
+            {
                 DateOfBirthError = string.Empty;
+            }
 
             // Phone — Romanian format 07XXXXXXXX
             if (string.IsNullOrWhiteSpace(Phone))
             {
-                if (_submitAttempted) PhoneError = "Phone number is required.";
+                if (submitAttempted)
+                {
+                    PhoneError = "Phone number is required.";
+                }
+
                 valid = false;
             }
             else if (!Regex.IsMatch(Phone, @"^07\d{8}$"))
             {
-                if (_submitAttempted) PhoneError = "Phone must be in format 07XXXXXXXX.";
+                if (submitAttempted)
+                {
+                    PhoneError = "Phone must be in format 07XXXXXXXX.";
+                }
+
                 valid = false;
             }
             else
+            {
                 PhoneError = string.Empty;
+            }
 
-          
             if (string.IsNullOrWhiteSpace(EmergencyContact))
             {
-                if (_submitAttempted) EmergencyContactError = "Emergency contact is required.";
+                if (submitAttempted)
+                {
+                    EmergencyContactError = "Emergency contact is required.";
+                }
+
                 valid = false;
             }
             else if (!Regex.IsMatch(EmergencyContact,
                 @"^[A-Za-zÀ-ÖØ-öø-ÿ]+(?:[\s\-][A-Za-zÀ-ÖØ-öø-ÿ]+)+ - 07\d{8}$"))
             {
-                if (_submitAttempted) EmergencyContactError =
+                if (submitAttempted)
+                {
+                    EmergencyContactError =
                     "Format: Firstname Lastname - 07XXXXXXXX";
+                }
+
                 valid = false;
             }
             else
+            {
                 EmergencyContactError = string.Empty;
+            }
 
             // Chief Complaint
             if (string.IsNullOrWhiteSpace(ChiefComplaint))
             {
-                if (_submitAttempted) ChiefComplaintError = "Chief complaint is required.";
+                if (submitAttempted)
+                {
+                    ChiefComplaintError = "Chief complaint is required.";
+                }
+
                 valid = false;
             }
             else
+            {
                 ChiefComplaintError = string.Empty;
+            }
 
             return valid;
         }
 
-
         private Microsoft.UI.Xaml.XamlRoot? GetXamlRoot()
             => App.MainAppWindow?.Content?.XamlRoot;
-
-
 
         [RelayCommand]
         private async Task RegisterPatientAndVisit()
         {
-            _submitAttempted = true;
+            submitAttempted = true;
 
             if (!ValidateAll())
             {
@@ -216,7 +259,7 @@ namespace ERManagementSystem.ViewModels
                     Emergency_Contact = EmergencyContact
                 };
 
-                ER_Visit visit = _registrationService.RegisterPatientAndVisit(patient, ChiefComplaint);
+                ER_Visit visit = registrationService.RegisterPatientAndVisit(patient, ChiefComplaint);
 
                 var successDialog = new ContentDialog
                 {
@@ -266,7 +309,7 @@ namespace ERManagementSystem.ViewModels
             EmergencyContactError = string.Empty;
             ChiefComplaintError = string.Empty;
 
-            _submitAttempted = false;
+            submitAttempted = false;
         }
     }
 }

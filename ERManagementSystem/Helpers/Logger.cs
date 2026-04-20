@@ -7,7 +7,7 @@ namespace ERManagementSystem.Helpers
 {
     public static class Logger
     {
-        private static readonly object _lock = new();
+        private static readonly object SyncLock = new object();
 
         private static string LogDirectory =>
             Path.Combine(AppContext.BaseDirectory, "Logs");
@@ -38,7 +38,7 @@ namespace ERManagementSystem.Helpers
         {
             try
             {
-                lock (_lock)
+                lock (SyncLock)
                 {
                     Directory.CreateDirectory(LogDirectory);
 

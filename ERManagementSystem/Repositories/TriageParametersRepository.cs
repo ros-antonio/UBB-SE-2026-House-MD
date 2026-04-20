@@ -1,17 +1,17 @@
-﻿using ERManagementSystem.Helpers;
+﻿using System;
+using ERManagementSystem.Helpers;
 using ERManagementSystem.Models;
 using Microsoft.Data.SqlClient;
-using System;
 
 namespace ERManagementSystem.Repositories
 {
     public class TriageParametersRepository
     {
-        private readonly SqlHelper _sqlHelper;
+        private readonly SqlHelper sqlHelper;
 
         public TriageParametersRepository(SqlHelper sqlHelper)
         {
-            _sqlHelper = sqlHelper;
+            this.sqlHelper = sqlHelper;
         }
 
         /// <summary>
@@ -36,7 +36,7 @@ namespace ERManagementSystem.Repositories
 
             try
             {
-                _sqlHelper.ExecuteNonQuery(sql, sqlParams);
+                sqlHelper.ExecuteNonQuery(sql, sqlParams);
                 Logger.Info($"[TriageParametersRepository] Parameters saved for triage {parameters.Triage_ID}");
             }
             catch (Exception ex)
@@ -63,7 +63,7 @@ namespace ERManagementSystem.Repositories
 
             try
             {
-                using var reader = _sqlHelper.ExecuteReader(sql, parameters);
+                using var reader = sqlHelper.ExecuteReader(sql, parameters);
 
                 if (reader.Read())
                 {
@@ -93,7 +93,9 @@ namespace ERManagementSystem.Repositories
         public void Delete(Triage_Parameters parameters)
         {
             if (parameters == null || parameters.Triage_ID <= 0)
+            {
                 throw new ArgumentException("Invalid Triage_Parameters object.");
+            }
 
             string sql = "DELETE FROM Triage_Parameters WHERE Triage_ID = @Triage_ID";
 
@@ -102,7 +104,7 @@ namespace ERManagementSystem.Repositories
                 new SqlParameter("@Triage_ID", parameters.Triage_ID)
             };
 
-            _sqlHelper.ExecuteNonQuery(sql, sqlParams);
+            sqlHelper.ExecuteNonQuery(sql, sqlParams);
         }
     }
 }

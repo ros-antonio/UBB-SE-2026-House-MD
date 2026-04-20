@@ -1,12 +1,12 @@
+using System;
+using System.Collections.ObjectModel;
+using System.Linq;
+using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using ERManagementSystem.Models;
 using ERManagementSystem.Services;
 using Microsoft.UI.Xaml.Controls;
-using System;
-using System.Collections.ObjectModel;
-using System.Linq;
-using System.Threading.Tasks;
 
 namespace ERManagementSystem.ViewModels
 {
@@ -24,7 +24,7 @@ namespace ERManagementSystem.ViewModels
     {
         public Action? ClearGridSelection { get; set; }
         public Action? RefreshGrid { get; set; }
-        private readonly ITransferService _transferService;
+        private readonly ITransferService transferService;
 
         // XamlRoot needed to show ContentDialogs — set by the View
         public Microsoft.UI.Xaml.XamlRoot? XamlRoot { get; set; }
@@ -35,10 +35,10 @@ namespace ERManagementSystem.ViewModels
         private VisitSummary? selectedVisit;
 
         [ObservableProperty]
-        private ObservableCollection<VisitSummary> eligibleVisits = new();
+        private ObservableCollection<VisitSummary> eligibleVisits = new ObservableCollection<VisitSummary>();
 
         [ObservableProperty]
-        private ObservableCollection<Transfer_Log> transferLogs = new();
+        private ObservableCollection<Transfer_Log> transferLogs = new ObservableCollection<Transfer_Log>();
 
         [ObservableProperty]
         private string statusMessage = string.Empty;
@@ -51,7 +51,7 @@ namespace ERManagementSystem.ViewModels
         // Constructor
         public TransferLogViewModel(ITransferService transferService)
         {
-            _transferService = transferService;
+            this.transferService = transferService;
         }
 
         // LoadLogs(): void  (Task 6.13)
@@ -61,16 +61,23 @@ namespace ERManagementSystem.ViewModels
             TransferLogs.Clear();
             CanRetry = false;
 
-            if (SelectedVisit == null) return;
+            if (SelectedVisit == null)
+            {
+                return;
+            }
 
-            var logs = _transferService.GetLogs(SelectedVisit.Visit_ID);
+            var logs = transferService.GetLogs(SelectedVisit.Visit_ID);
             foreach (var log in logs)
+            {
                 TransferLogs.Add(log);
+            }
 
             // Task 6.11: enable Retry if most recent attempt was FAILED
             var latest = TransferLogs.FirstOrDefault();
             if (latest != null && latest.Status == "FAILED")
+            {
                 CanRetry = true;
+            }
         }
 
         partial void OnSelectedVisitChanged(VisitSummary? value)
@@ -89,7 +96,7 @@ namespace ERManagementSystem.ViewModels
 
             var freshList = new ObservableCollection<VisitSummary>();
 
-            var eligibleVisits = _transferService.GetEligibleVisitsForTransfer();
+            var eligibleVisits = transferService.GetEligibleVisitsForTransfer();
             foreach (var eligibleVisit in eligibleVisits)
             {
                 freshList.Add(new VisitSummary
@@ -109,7 +116,7 @@ namespace ERManagementSystem.ViewModels
         [RelayCommand]
         public async Task SendPatientData()
         {
-            // Task 6.9: Validation with WinUI 3 ContentDialog 
+            // Task 6.9: Validation with WinUI 3 ContentDialog
             if (SelectedVisit == null)
             {
                 await ShowDialog("Validation Error", "Please select a visit before sending.");
@@ -131,11 +138,11 @@ namespace ERManagementSystem.ViewModels
             try
             {
                 // Task 6.4 & 6.5: send data, save JSON, log attempt
-                _transferService.SendPatientData(SelectedVisit.Visit_ID);
+                transferService.SendPatientData(SelectedVisit.Visit_ID);
 
                 // Task 6.10: transition visit + mark patient as transferred
-                _transferService.TransitionVisitToTransferred(SelectedVisit.Visit_ID);
-                _transferService.MarkPatientAsTransferred(SelectedVisit.Visit_ID);
+                transferService.TransitionVisitToTransferred(SelectedVisit.Visit_ID);
+                transferService.MarkPatientAsTransferred(SelectedVisit.Visit_ID);
 
                 SelectedVisit.Status = ER_Visit.VisitStatus.TRANSFERRED;
                 SelectedVisit.Transferred = true;
@@ -166,16 +173,19 @@ namespace ERManagementSystem.ViewModels
         [RelayCommand]
         public async Task RetryTransfer()
         {
-            if (SelectedVisit == null) return;
+            if (SelectedVisit == null)
+            {
+                return;
+            }
 
             try
             {
-                var result = _transferService.RetryTransfer(SelectedVisit.Visit_ID);
+                var result = transferService.RetryTransfer(SelectedVisit.Visit_ID);
 
                 if (result.Status == "SUCCESS")
                 {
-                    _transferService.TransitionVisitToTransferred(SelectedVisit.Visit_ID);
-                    _transferService.MarkPatientAsTransferred(SelectedVisit.Visit_ID);
+                    transferService.TransitionVisitToTransferred(SelectedVisit.Visit_ID);
+                    transferService.MarkPatientAsTransferred(SelectedVisit.Visit_ID);
 
                     SelectedVisit.Status = ER_Visit.VisitStatus.TRANSFERRED;
                     SelectedVisit.Transferred = true;
@@ -185,8 +195,6 @@ namespace ERManagementSystem.ViewModels
 
                     await ShowDialog("Retry Successful",
                         $"Patient data for Visit {SelectedVisit.Visit_ID} was successfully sent on retry.");
-
-                    
                 }
             }
             catch (Exception ex)
@@ -220,7 +228,7 @@ namespace ERManagementSystem.ViewModels
 
             try
             {
-                _transferService.CloseVisit(visitId);
+                transferService.CloseVisit(visitId);
 
                 SelectedVisit.Status = ER_Visit.VisitStatus.CLOSED;
 
@@ -236,7 +244,10 @@ namespace ERManagementSystem.ViewModels
         // Task 6.9 helper — WinUI 3 ContentDialog
         private async Task ShowDialog(string title, string message)
         {
-            if (XamlRoot == null) return;
+            if (XamlRoot == null)
+            {
+                return;
+            }
 
             var dialog = new ContentDialog
             {
@@ -267,5 +278,4 @@ namespace ERManagementSystem.ViewModels
         [ObservableProperty]
         private bool transferred;
     }
-
 }

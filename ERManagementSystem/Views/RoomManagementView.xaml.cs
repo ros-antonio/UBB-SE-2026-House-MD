@@ -22,7 +22,9 @@ namespace ERManagementSystem.Views
         {
             base.OnNavigatedTo(e);
             if (e.Parameter is RoomManagementViewModel vm)
+            {
                 ViewModel = vm;
+            }
 
             ViewModel.XamlRoot = this.Content?.XamlRoot;
             Bindings.Update();

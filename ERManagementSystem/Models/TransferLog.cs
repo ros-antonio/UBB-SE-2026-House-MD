@@ -22,16 +22,19 @@ namespace ERManagementSystem.Models
         public string? FilePath { get; set; }
 
         // schema.sql: Status CHECK IN ('SUCCESS','FAILED','RETRYING')
-        private string _status = "RETRYING";
+        private string status = "RETRYING";
         public string Status
         {
-            get => _status;
+            get => status;
             set
             {
                 if (value != "SUCCESS" && value != "FAILED" && value != "RETRYING")
+                {
                     throw new ArgumentException(
                         $"Invalid status '{value}'. Allowed: SUCCESS, FAILED, RETRYING.");
-                _status = value;
+                }
+
+                status = value;
             }
         }
 
@@ -43,11 +46,19 @@ namespace ERManagementSystem.Models
         public void Validate()
         {
             if (string.IsNullOrWhiteSpace(Target_System))
+            {
                 throw new ArgumentException("Target_System must not be empty.");
+            }
+
             if (Visit_ID <= 0)
+            {
                 throw new ArgumentException("Visit_ID must be a valid positive integer.");
+            }
+
             if (Status != "SUCCESS" && Status != "FAILED" && Status != "RETRYING")
+            {
                 throw new ArgumentException("Status must be SUCCESS, FAILED, or RETRYING.");
+            }
         }
     }
 }

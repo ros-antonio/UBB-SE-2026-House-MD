@@ -11,30 +11,31 @@ namespace ERManagementSystem.Services
 {
     public class RegistrationService
     {
-        private readonly PatientRepository _patientRepository;
-        private readonly ERVisitRepository _erVisitRepository;
+        private readonly PatientRepository patientRepository;
+        private readonly ERVisitRepository erVisitRepository;
 
         public RegistrationService(
             PatientRepository patientRepository,
             ERVisitRepository erVisitRepository)
         {
-            _patientRepository = patientRepository;
-            _erVisitRepository = erVisitRepository;
+            this.patientRepository = patientRepository;
+            this.erVisitRepository = erVisitRepository;
         }
 
-       
         public ER_Visit RegisterPatientAndVisit(Patient patient, string chiefComplaint)
         {
             // 1. Validate patient data
             if (!patient.Validate(out var errors))
+            {
                 throw new InvalidOperationException(
                     "Patient data is invalid:\n" + string.Join("\n", errors));
+            }
 
             // 2. Check if patient already exists — if not, insert
-            var existing = _patientRepository.GetById(patient.Patient_ID);
+            var existing = patientRepository.GetById(patient.Patient_ID);
             if (existing == null)
             {
-                _patientRepository.Add(patient);
+                patientRepository.Add(patient);
             }
 
             // 3. Build the ER_Visit
@@ -48,11 +49,13 @@ namespace ERManagementSystem.Services
 
             // 4. Validate the visit
             if (!visit.Validate(out var visitErrors))
+            {
                 throw new InvalidOperationException(
                     "ER Visit data is invalid:\n" + string.Join("\n", visitErrors));
+            }
 
             // 5. Persist the visit
-            _erVisitRepository.Add(visit);
+            erVisitRepository.Add(visit);
 
             return visit;
         }

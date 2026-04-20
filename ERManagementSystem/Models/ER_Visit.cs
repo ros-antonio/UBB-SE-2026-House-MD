@@ -58,20 +58,32 @@ namespace ERManagementSystem.Models
             errors = new List<string>();
 
             if (string.IsNullOrWhiteSpace(Patient_ID))
+            {
                 errors.Add("Patient ID is required.");
+            }
 
             if (Arrival_date_time == default)
+            {
                 errors.Add("Arrival date and time is required.");
+            }
 
             if (string.IsNullOrWhiteSpace(Chief_Complaint))
+            {
                 errors.Add("Chief complaint is required.");
+            }
             else if (Chief_Complaint.Length > 255)
+            {
                 errors.Add("Chief complaint must not exceed 255 characters.");
+            }
 
             if (string.IsNullOrWhiteSpace(Status))
+            {
                 errors.Add("Status is required.");
+            }
             else if (!AllowedStatuses.Contains(Status))
+            {
                 errors.Add($"Invalid status '{Status}'. Must be one of: {string.Join(", ", AllowedStatuses)}.");
+            }
 
             return errors.Count == 0;
         }

@@ -9,11 +9,11 @@ namespace ERManagementSystem.Services
 {
     public class QueueService : IQueueService
     {
-        private readonly ERVisitRepository _visitRepository;
+        private readonly ERVisitRepository visitRepository;
 
         public QueueService(ERVisitRepository visitRepository)
         {
-            _visitRepository = visitRepository;
+            this.visitRepository = visitRepository;
         }
 
         /// <summary>
@@ -25,7 +25,7 @@ namespace ERManagementSystem.Services
 
             try
             {
-                var queueWithTriage = _visitRepository.GetActiveVisitsWithTriage();
+                var queueWithTriage = visitRepository.GetActiveVisitsWithTriage();
 
                 Logger.Info($"[QueueService] Retrieved {queueWithTriage.Count} active visits");
 
@@ -65,7 +65,7 @@ namespace ERManagementSystem.Services
 
             try
             {
-                var visit = _visitRepository.GetByVisitId(visitId);
+                var visit = visitRepository.GetByVisitId(visitId);
 
                 if (visit == null)
                 {
@@ -74,7 +74,7 @@ namespace ERManagementSystem.Services
                 }
 
                 visit.Status = ER_Visit.VisitStatus.IN_ROOM;
-                _visitRepository.UpdateStatus(visitId, visit.Status);
+                visitRepository.UpdateStatus(visitId, visit.Status);
 
                 Logger.Info($"[QueueService] Visit {visitId} moved to IN_ROOM");
             }
@@ -84,7 +84,5 @@ namespace ERManagementSystem.Services
                 throw;
             }
         }
-
-
     }
 }

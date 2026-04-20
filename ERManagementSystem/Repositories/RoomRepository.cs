@@ -8,11 +8,11 @@ namespace ERManagementSystem.Repositories
 {
     public class RoomRepository
     {
-        private readonly SqlHelper _sqlHelper;
+        private readonly SqlHelper sqlHelper;
 
         public RoomRepository(SqlHelper sqlHelper)
         {
-            _sqlHelper = sqlHelper;
+            this.sqlHelper = sqlHelper;
         }
 
         public List<ER_Room> GetAllRooms()
@@ -24,9 +24,12 @@ namespace ERManagementSystem.Repositories
             var rooms = new List<ER_Room>();
             try
             {
-                using var reader = _sqlHelper.ExecuteReader(query);
+                using var reader = sqlHelper.ExecuteReader(query);
                 while (reader.Read())
+                {
                     rooms.Add(MapReaderToRoom(reader));
+                }
+
                 Logger.Info($"GetAllRooms returned {rooms.Count} room(s).");
             }
             catch (Exception ex)
@@ -48,9 +51,11 @@ namespace ERManagementSystem.Repositories
 
             try
             {
-                using var reader = _sqlHelper.ExecuteReader(query, parameters);
+                using var reader = sqlHelper.ExecuteReader(query, parameters);
                 if (reader.Read())
+                {
                     return MapReaderToRoom(reader);
+                }
 
                 Logger.Warning($"RoomRepository.GetById: Room {roomId} not found.");
                 return null;
@@ -63,8 +68,8 @@ namespace ERManagementSystem.Repositories
         }
 
         public List<ER_Room> GetAvailableRooms() => GetRoomsByStatus(ER_Room.RoomStatus.Available);
-        public List<ER_Room> GetOccupiedRooms()  => GetRoomsByStatus(ER_Room.RoomStatus.Occupied);
-        public List<ER_Room> GetCleaningRooms()  => GetRoomsByStatus(ER_Room.RoomStatus.Cleaning);
+        public List<ER_Room> GetOccupiedRooms() => GetRoomsByStatus(ER_Room.RoomStatus.Occupied);
+        public List<ER_Room> GetCleaningRooms() => GetRoomsByStatus(ER_Room.RoomStatus.Cleaning);
 
         public List<ER_Room> GetRoomsByStatus(string status)
         {
@@ -78,9 +83,12 @@ namespace ERManagementSystem.Repositories
 
             try
             {
-                using var reader = _sqlHelper.ExecuteReader(query, parameters);
+                using var reader = sqlHelper.ExecuteReader(query, parameters);
                 while (reader.Read())
+                {
                     rooms.Add(MapReaderToRoom(reader));
+                }
+
                 Logger.Info($"GetRoomsByStatus('{status}') returned {rooms.Count} room(s).");
             }
             catch (Exception ex)
@@ -106,7 +114,7 @@ namespace ERManagementSystem.Repositories
 
             try
             {
-                _sqlHelper.ExecuteNonQuery(query, parameters);
+                sqlHelper.ExecuteNonQuery(query, parameters);
                 Logger.Info($"Room {roomId} status updated to '{newStatus}'.");
             }
             catch (Exception ex)
@@ -132,7 +140,7 @@ namespace ERManagementSystem.Repositories
 
             try
             {
-                _sqlHelper.ExecuteNonQuery(query, parameters);
+                sqlHelper.ExecuteNonQuery(query, parameters);
                 Logger.Info($"Room {roomId} linked to Visit {visitId}.");
             }
             catch (Exception ex)
@@ -154,7 +162,7 @@ namespace ERManagementSystem.Repositories
 
             try
             {
-                _sqlHelper.ExecuteNonQuery(query, parameters);
+                sqlHelper.ExecuteNonQuery(query, parameters);
                 Logger.Info($"Room {roomId} visit link cleared.");
             }
             catch (Exception ex)
@@ -181,7 +189,7 @@ namespace ERManagementSystem.Repositories
 
             try
             {
-                using var reader = _sqlHelper.ExecuteReader(query, parameters);
+                using var reader = sqlHelper.ExecuteReader(query, parameters);
                 if (reader.Read())
                 {
                     int roomId = reader.GetInt32(0);
@@ -215,7 +223,7 @@ namespace ERManagementSystem.Repositories
 
             try
             {
-                using var reader = _sqlHelper.ExecuteReader(query, parameters);
+                using var reader = sqlHelper.ExecuteReader(query, parameters);
                 if (reader.Read())
                 {
                     int roomId = reader.GetInt32(0);
@@ -285,17 +293,17 @@ namespace ERManagementSystem.Repositories
 
             try
             {
-                using var reader = _sqlHelper.ExecuteReader(primaryQuery, parameters);
+                using var reader = sqlHelper.ExecuteReader(primaryQuery, parameters);
                 if (reader.Read())
                 {
                     Logger.Info($"GetVisitByRoomId: Room {roomId} → Visit {reader.GetInt32(0)} (Current_Visit_ID).");
                     return new ER_Visit
                     {
-                        Visit_ID          = reader.GetInt32(0),
-                        Patient_ID        = reader.GetString(1),
+                        Visit_ID = reader.GetInt32(0),
+                        Patient_ID = reader.GetString(1),
                         Arrival_date_time = reader.GetDateTime(2),
-                        Chief_Complaint   = reader.GetString(3),
-                        Status            = reader.GetString(4)
+                        Chief_Complaint = reader.GetString(3),
+                        Status = reader.GetString(4)
                     };
                 }
             }
@@ -316,17 +324,17 @@ namespace ERManagementSystem.Repositories
 
             try
             {
-                using var reader = _sqlHelper.ExecuteReader(fallbackQuery, parameters);
+                using var reader = sqlHelper.ExecuteReader(fallbackQuery, parameters);
                 if (reader.Read())
                 {
                     Logger.Info($"GetVisitByRoomId: Room {roomId} → Visit {reader.GetInt32(0)} (Examination fallback).");
                     return new ER_Visit
                     {
-                        Visit_ID          = reader.GetInt32(0),
-                        Patient_ID        = reader.GetString(1),
+                        Visit_ID = reader.GetInt32(0),
+                        Patient_ID = reader.GetString(1),
                         Arrival_date_time = reader.GetDateTime(2),
-                        Chief_Complaint   = reader.GetString(3),
-                        Status            = reader.GetString(4)
+                        Chief_Complaint = reader.GetString(3),
+                        Status = reader.GetString(4)
                     };
                 }
                 Logger.Warning($"GetVisitByRoomId: no active visit found for Room {roomId}.");
@@ -341,10 +349,10 @@ namespace ERManagementSystem.Repositories
 
         private static ER_Room MapReaderToRoom(SqlDataReader reader) => new ER_Room
         {
-            Room_ID             = Convert.ToInt32(reader["Room_ID"]),
-            Room_Type           = reader["Room_Type"].ToString()!,
-            Availability_Status = reader["Availability_Status"].ToString()!,
-            Current_Visit_ID    = reader["Current_Visit_ID"] is DBNull
+            Room_ID = Convert.ToInt32(reader["Room_ID"]),
+            Room_Type = reader["Room_Type"].ToString() !,
+            Availability_Status = reader["Availability_Status"].ToString() !,
+            Current_Visit_ID = reader["Current_Visit_ID"] is DBNull
                                   ? null
                                   : Convert.ToInt32(reader["Current_Visit_ID"])
         };
