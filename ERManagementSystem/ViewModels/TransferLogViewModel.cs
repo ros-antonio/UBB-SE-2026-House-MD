@@ -6,7 +6,6 @@ using ERManagementSystem.Repositories;
 using ERManagementSystem.Services;
 using Microsoft.Data.SqlClient;
 using Microsoft.UI.Xaml.Controls;
-using CommunityToolkit.Mvvm.ComponentModel;
 using System;
 using System.Collections.ObjectModel;
 using System.Linq;
@@ -27,7 +26,6 @@ namespace ERManagementSystem.ViewModels
     {
         public Action? ClearGridSelection { get; set; }
         public Action? RefreshGrid { get; set; }
-        //public Action? ClearGridSelection { get; set; }
         private readonly TransferLogRepository _transferLogRepository;
         private readonly StateManagementService _stateManagementService;
         private readonly TransferService _transferService;

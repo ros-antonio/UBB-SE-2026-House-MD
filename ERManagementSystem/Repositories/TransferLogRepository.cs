@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using Microsoft.Data.SqlClient;
 using ERManagementSystem.Helpers;
 using ERManagementSystem.Models;
-using ERManagementSystem.Helpers;
 
 namespace ERManagementSystem.Repositories
 {

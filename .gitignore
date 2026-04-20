@@ -4,3 +4,6 @@ obj/
 *.user
 *.suo
 *.log
+
+# Local app configuration
+ERManagementSystem/appsettings.json
