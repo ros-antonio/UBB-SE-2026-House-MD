@@ -59,11 +59,6 @@ namespace ERManagementSystem
             services.AddTransient<RoomAssignmentService>();       // Alex
             services.AddTransient<RoomManagementService>();       // Alex
 
-            // ── Services (Triage & Queue) ────────────────────────────────────
-            services.AddSingleton<NurseService>();
-            services.AddTransient<TriageService>();
-            services.AddTransient<QueueService>();
-
             // ── ViewModels ───────────────────────────────────────────────────
             services.AddSingleton<MainWindowViewModel>();
             services.AddTransient<PatientRegistrationViewModel>();

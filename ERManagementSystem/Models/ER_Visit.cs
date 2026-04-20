@@ -11,7 +11,7 @@ namespace ERManagementSystem.Models
         public int Visit_ID { get; set; }
 
        
-        public string Patient_ID { get; set; }
+        public string Patient_ID { get; set; } = string.Empty;
 
        
         public DateTime Arrival_date_time { get; set; } = DateTime.Now;

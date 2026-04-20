@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-    using System.Linq;
 
 namespace ERManagementSystem.Models
 {
@@ -11,7 +10,7 @@ namespace ERManagementSystem.Models
         public int Doctor_ID { get; set; }
         public DateTime Exam_Time { get; set; }
         public int Room_ID {get; set;}
-        public string Notes {get; set;}
+        public string Notes {get; set;} = string.Empty;
 
         public Examination()
         {

@@ -146,13 +146,13 @@ namespace ERManagementSystem.Repositories
         {
             return new Patient
             {
-                Patient_ID = reader["Patient_ID"].ToString(),
-                First_Name = reader["First_Name"].ToString(),
-                Last_Name = reader["Last_Name"].ToString(),
+                Patient_ID = reader["Patient_ID"] as string ?? string.Empty,
+                First_Name = reader["First_Name"] as string ?? string.Empty,
+                Last_Name = reader["Last_Name"] as string ?? string.Empty,
                 Date_of_Birth = Convert.ToDateTime(reader["Date_of_Birth"]),
-                Gender = reader["Gender"].ToString(),
-                Phone = reader["Phone"].ToString(),
-                Emergency_Contact = reader["Emergency_Contact"].ToString(),
+                Gender = reader["Gender"] as string ?? string.Empty,
+                Phone = reader["Phone"] as string ?? string.Empty,
+                Emergency_Contact = reader["Emergency_Contact"] as string ?? string.Empty,
                 Transferred = Convert.ToBoolean(reader["Transferred"])
             };
         }

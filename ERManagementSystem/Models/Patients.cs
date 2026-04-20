@@ -8,20 +8,20 @@ namespace ERManagementSystem.Models
 	public class Patient
 	{
 		
-		public string Patient_ID { get; set; }
+      public string Patient_ID { get; set; } = string.Empty;
 
-		public string First_Name { get; set; }
+      public string First_Name { get; set; } = string.Empty;
 
-		public string Last_Name { get; set; }
+       public string Last_Name { get; set; } = string.Empty;
 
 		public DateTime Date_of_Birth { get; set; }
 
 		
-		public string Gender { get; set; }
+      public string Gender { get; set; } = string.Empty;
 
-		public string Phone { get; set; }
+       public string Phone { get; set; } = string.Empty;
 
-		public string Emergency_Contact { get; set; }
+       public string Emergency_Contact { get; set; } = string.Empty;
 
 	
 		public bool Transferred { get; set; } = false;

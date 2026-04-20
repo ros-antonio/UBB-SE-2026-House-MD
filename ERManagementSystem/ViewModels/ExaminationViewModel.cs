@@ -1,6 +1,7 @@
 using System;
 using System.Collections.ObjectModel;
 using System.Linq;
+using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using Microsoft.UI.Xaml.Controls;
@@ -298,7 +299,7 @@ namespace ERManagementSystem.ViewModels
         // Task 4.5 / 4.6: Request a doctor for the selected visit.
         // Task 4.9: CanExecute disables button unless visit is IN_ROOM.
         [RelayCommand(CanExecute = nameof(CanRequestDoctor))]
-        public async void RequestDoctor()
+        public async Task RequestDoctor()
         {
             if (SelectedVisit == null) return;
 
@@ -342,7 +343,7 @@ namespace ERManagementSystem.ViewModels
         // Task 4.4 / 4.8: Save the examination record and transition
         // WAITING_FOR_DOCTOR → IN_EXAMINATION.
         [RelayCommand(CanExecute = nameof(CanSaveExamination))]
-        public async void SaveExamination()
+        public async Task SaveExamination()
         {
             if (SelectedVisit == null) return;
 
@@ -406,7 +407,7 @@ namespace ERManagementSystem.ViewModels
 
         // Task 4.12: Examination Summary [RelayCommand] 
         [RelayCommand(CanExecute = nameof(CanViewSummary))]
-        public async void ViewSummary()
+        public async Task ViewSummary()
         {
             if (SelectedVisit == null || XamlRoot == null) return;
 

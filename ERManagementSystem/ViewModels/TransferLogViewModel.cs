@@ -9,6 +9,7 @@ using Microsoft.UI.Xaml.Controls;
 using System;
 using System.Collections.ObjectModel;
 using System.Linq;
+using System.Threading.Tasks;
 
 namespace ERManagementSystem.ViewModels
 {
@@ -124,7 +125,7 @@ namespace ERManagementSystem.ViewModels
 
         // SendPatientData(): void  (Tasks 6.7, 6.9, 6.10)
         [RelayCommand]
-        public async void SendPatientData()
+        public async Task SendPatientData()
         {
             // Task 6.9: Validation with WinUI 3 ContentDialog 
             if (SelectedVisit == null)
@@ -181,7 +182,7 @@ namespace ERManagementSystem.ViewModels
 
         // Task 6.11 — Retry failed transfer
         [RelayCommand]
-        public async void RetryTransfer()
+        public async Task RetryTransfer()
         {
             if (SelectedVisit == null) return;
 
@@ -218,7 +219,7 @@ namespace ERManagementSystem.ViewModels
         }
 
         [RelayCommand]
-        public async void CloseVisit()
+        public async Task CloseVisit()
         {
             if (SelectedVisit == null)
             {
@@ -251,7 +252,7 @@ namespace ERManagementSystem.ViewModels
         }
 
         // Task 6.9 helper — WinUI 3 ContentDialog
-        private async System.Threading.Tasks.Task ShowDialog(string title, string message)
+        private async Task ShowDialog(string title, string message)
         {
             if (XamlRoot == null) return;
 
