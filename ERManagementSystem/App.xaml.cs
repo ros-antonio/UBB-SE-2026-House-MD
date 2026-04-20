@@ -55,8 +55,8 @@ namespace ERManagementSystem
                     sp.GetRequiredService<RoomRepository>()));
             services.AddSingleton<NurseService>();
             services.AddTransient<ITriageService, TriageService>();
-            services.AddTransient<QueueService>();
-            services.AddTransient<RoomAssignmentService>();       // Alex
+            services.AddTransient<IQueueService, QueueService>();
+            services.AddTransient<IRoomAssignmentService, RoomAssignmentService>();
             services.AddTransient<RoomManagementService>();       // Alex
             services.AddSingleton<MockStaffService>();
             services.AddTransient<IExaminationService, ExaminationService>();

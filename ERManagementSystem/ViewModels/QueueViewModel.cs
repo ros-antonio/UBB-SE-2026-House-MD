@@ -9,9 +9,9 @@ namespace ERManagementSystem.ViewModels
 {
     public partial class QueueViewModel : BaseViewModel
     {
-        private readonly QueueService _queueService;
+        private readonly IQueueService _queueService;
 
-        public QueueViewModel(QueueService queueService)
+        public QueueViewModel(IQueueService queueService)
         {
             _queueService = queueService;
         }

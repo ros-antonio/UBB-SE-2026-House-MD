@@ -7,23 +7,53 @@ using ERManagementSystem.Repositories;
 
 namespace ERManagementSystem.Services
 {
-    public class RoomAssignmentService
+    public class RoomAssignmentService : IRoomAssignmentService
     {
         private readonly RoomRepository               _roomRepository;
         private readonly ERVisitRepository            _erVisitRepository;
         private readonly StateManagementService       _stateManagementService;
         private readonly TriageParametersRepository   _triageParamsRepository;
+        private readonly PatientRepository            _patientRepository;
+        private readonly TriageRepository             _triageRepository;
 
         public RoomAssignmentService(
             RoomRepository               roomRepository,
             ERVisitRepository            erVisitRepository,
             StateManagementService       stateManagementService,
-            TriageParametersRepository   triageParamsRepository)
+            TriageParametersRepository   triageParamsRepository,
+            PatientRepository            patientRepository,
+            TriageRepository             triageRepository)
         {
             _roomRepository         = roomRepository;
             _erVisitRepository      = erVisitRepository;
             _stateManagementService = stateManagementService;
             _triageParamsRepository = triageParamsRepository;
+            _patientRepository      = patientRepository;
+            _triageRepository       = triageRepository;
+        }
+
+        public IReadOnlyList<(ER_Visit visit, Triage triage)> GetWaitingVisitsWithTriage()
+        {
+            return _erVisitRepository.GetActiveVisitsWithTriage()
+                .Where(queueEntry => queueEntry.visit.Status == ER_Visit.VisitStatus.WAITING_FOR_ROOM)
+                .OrderBy(queueEntry => queueEntry.triage.Triage_Level)
+                .ThenBy(queueEntry => queueEntry.visit.Arrival_date_time)
+                .ToList();
+        }
+
+        public IReadOnlyList<ER_Room> GetAvailableRooms()
+        {
+            return _roomRepository.GetAvailableRooms();
+        }
+
+        public Patient? GetPatientById(string patientId)
+        {
+            return _patientRepository.GetById(patientId);
+        }
+
+        public Triage? GetTriageByVisitId(int visitId)
+        {
+            return _triageRepository.GetByVisitId(visitId);
         }
 
         public ER_Room? FindAvailableRoom(string requiredRoomType)
@@ -72,11 +102,7 @@ namespace ERManagementSystem.Services
         public bool AutoAssignRoom()
         {
             // Get waiting visits with triage, ordered by priority (same as QueueService)
-            var waitingWithTriage = _erVisitRepository.GetActiveVisitsWithTriage()
-                .Where(x => x.visit.Status == ER_Visit.VisitStatus.WAITING_FOR_ROOM)
-                .OrderBy(x => x.triage.Triage_Level)
-                .ThenBy(x => x.visit.Arrival_date_time)
-                .ToList();
+            var waitingWithTriage = GetWaitingVisitsWithTriage();
 
             if (waitingWithTriage.Count == 0)
                 return false;

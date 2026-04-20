@@ -7,7 +7,7 @@ using ERManagementSystem.Helpers;
 
 namespace ERManagementSystem.Services
 {
-    public class QueueService
+    public class QueueService : IQueueService
     {
         private readonly ERVisitRepository _visitRepository;
 
@@ -47,8 +47,8 @@ namespace ERManagementSystem.Services
             Logger.Info("[QueueService] Ordering queue by triage level and arrival time");
 
             var ordered = queue
-                .OrderBy(x => x.triage.Triage_Level)
-                .ThenBy(x => x.visit.Arrival_date_time)
+                .OrderBy(queueEntry => queueEntry.triage.Triage_Level)
+                .ThenBy(queueEntry => queueEntry.visit.Arrival_date_time)
                 .ToList();
 
             Logger.Info("[QueueService] Queue ordering completed");

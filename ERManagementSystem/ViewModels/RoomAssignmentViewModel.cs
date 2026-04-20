@@ -5,7 +5,6 @@ using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using ERManagementSystem.Helpers;
 using ERManagementSystem.Models;
-using ERManagementSystem.Repositories;
 using ERManagementSystem.Services;
 using Microsoft.UI.Xaml.Controls;
 
@@ -13,26 +12,14 @@ namespace ERManagementSystem.ViewModels
 {
     public partial class RoomAssignmentViewModel : BaseViewModel
     {
-        private readonly RoomAssignmentService _roomAssignmentService;
-        private readonly RoomRepository        _roomRepository;
-        private readonly ERVisitRepository     _erVisitRepository;
-        private readonly PatientRepository     _patientRepository;
-        private readonly TriageRepository      _triageRepository;
+        private readonly IRoomAssignmentService _roomAssignmentService;
 
         public Microsoft.UI.Xaml.XamlRoot? XamlRoot { get; set; }
 
         public RoomAssignmentViewModel(
-            RoomAssignmentService roomAssignmentService,
-            RoomRepository        roomRepository,
-            ERVisitRepository     erVisitRepository,
-            PatientRepository     patientRepository,
-            TriageRepository      triageRepository)
+            IRoomAssignmentService roomAssignmentService)
         {
             _roomAssignmentService = roomAssignmentService;
-            _roomRepository        = roomRepository;
-            _erVisitRepository     = erVisitRepository;
-            _patientRepository     = patientRepository;
-            _triageRepository      = triageRepository;
         }
 
         [ObservableProperty] private ObservableCollection<ER_Visit> waitingVisits  = new();
@@ -54,8 +41,8 @@ namespace ERManagementSystem.ViewModels
 
             try
             {
-                SelectedPatient = _patientRepository.GetById(value.Patient_ID);
-                SelectedTriage = _triageRepository.GetByVisitId(value.Visit_ID);
+                SelectedPatient = _roomAssignmentService.GetPatientById(value.Patient_ID);
+                SelectedTriage = _roomAssignmentService.GetTriageByVisitId(value.Visit_ID);
             }
             catch
             {
@@ -72,13 +59,12 @@ namespace ERManagementSystem.ViewModels
                 IsBusy = true;
                 StatusMessage = string.Empty;
 
-                // Uses GetActiveVisitsWithTriage for priority-ordered waiting visits
-                var waitingWithTriage = _erVisitRepository.GetActiveVisitsWithTriage();
+                var waitingWithTriage = _roomAssignmentService.GetWaitingVisitsWithTriage();
                 WaitingVisits = new ObservableCollection<ER_Visit>();
                 foreach (var (visit, _) in waitingWithTriage)
                     WaitingVisits.Add(visit);
 
-                AvailableRooms = new ObservableCollection<ER_Room>(_roomRepository.GetAvailableRooms());
+                AvailableRooms = new ObservableCollection<ER_Room>(_roomAssignmentService.GetAvailableRooms());
             }
             catch (Exception ex)
             {
