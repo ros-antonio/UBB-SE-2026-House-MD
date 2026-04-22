@@ -68,6 +68,9 @@
     <PackageReference Include="Microsoft.WindowsAppSDK" Version="1.8.260317003" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\ERManagementSystem.Core\ERManagementSystem.Core.csproj" />
+  </ItemGroup>
+  <ItemGroup>
     <Page Update="Views\RoomManagementView.xaml">
       <Generator>MSBuild:Compile</Generator>
     </Page>
