@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -10,12 +11,13 @@ using ERManagementSystem.Core.Repositories;
 namespace ERManagementSystem.Core.Services
 {
     using System;
+    [ExcludeFromCodeCoverage]
     public class MockStaffService
     {
-        // Simulates requesting a doctor from Staff Management system
+    
         public int RequestDoctor(string specialization, Triage_Parameters symptoms)
         {
-            // Hardcoded doctor assignment based on specialization
+            
             return specialization?.Trim().ToLowerInvariant() switch
             {
                 "orthopedics" => 102,
@@ -24,7 +26,7 @@ namespace ERManagementSystem.Core.Services
                 "emergency medicine" => 106,
                 "general surgery" => 104,
                 "general" => 104,
-                _ => 104 // Default to General practitioner
+                _ => 104 
             };
         }
 

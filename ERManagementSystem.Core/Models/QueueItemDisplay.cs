@@ -1,4 +1,5 @@
 using System;
+using System.Diagnostics.CodeAnalysis;
 
 namespace ERManagementSystem.Core.Models
 {
@@ -7,6 +8,7 @@ namespace ERManagementSystem.Core.Models
     /// Wraps the (ER_Visit, Triage) tuple into bindable properties
     /// because DataGrid cannot bind to ValueTuple fields.
     /// </summary>
+    [ExcludeFromCodeCoverage]
     public class QueueItemDisplay
     {
         public int VisitId { get; set; }

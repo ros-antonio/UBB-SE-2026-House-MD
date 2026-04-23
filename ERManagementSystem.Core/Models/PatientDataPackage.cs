@@ -1,4 +1,5 @@
 using System;
+using System.Diagnostics.CodeAnalysis;
 
 namespace ERManagementSystem.Core.Models
 {
@@ -9,6 +10,7 @@ namespace ERManagementSystem.Core.Models
     /// Fields are assembled via a hand-written JOIN query across:
     /// Patient, ER_Visit, Triage, Triage_Parameters, Examination
     /// </summary>
+    [ExcludeFromCodeCoverage]
     public class PatientDataPackage
     {
         // --- From Patient table ---

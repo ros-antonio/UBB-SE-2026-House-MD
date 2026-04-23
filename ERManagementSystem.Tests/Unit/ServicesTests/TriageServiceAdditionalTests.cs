@@ -1,5 +1,7 @@
 ﻿// File: Unit/ServicesTests/TriageServiceAdditionalTests.cs
 using System;
+using System.Collections;
+using System.Reflection;
 using ERManagementSystem.Core.Models;
 using ERManagementSystem.Core.Repositories;
 using ERManagementSystem.Core.Services;
@@ -11,7 +13,7 @@ namespace ERManagementSystem.Tests.Unit.ServicesTests
     public class TriageServiceAdditionalTests
     {
         [Fact]
-        public void CreateTriageParameters_ValidParameters_DelegatesToRepository()
+        public void CreateTriage_NoAvailableNurse_ThrowsInvalidOperationException()
         {
             // Arrange
             var triageRepositoryMock = new Mock<ITriageRepository>();
@@ -20,7 +22,6 @@ namespace ERManagementSystem.Tests.Unit.ServicesTests
 
             var parameters = new Triage_Parameters
             {
-                Triage_ID = 12,
                 Consciousness = 1,
                 Breathing = 1,
                 Bleeding = 1,
@@ -28,38 +29,29 @@ namespace ERManagementSystem.Tests.Unit.ServicesTests
                 Pain_Level = 1
             };
 
-            var service = new TriageService(
-                triageRepositoryMock.Object,
-                triageParametersRepositoryMock.Object,
-                new NurseService(),
-                stateServiceMock.Object);
+            var nurseService = new NurseService();
+            var nursesField = typeof(NurseService).GetField("nurses", BindingFlags.NonPublic | BindingFlags.Instance);
+            var nurses = (IList?)nursesField?.GetValue(nurseService);
 
-            // Act
-            service.CreateTriageParameters(parameters);
-
-            // Assert
-            triageParametersRepositoryMock.Verify(repository => repository.Add(parameters), Times.Once);
-        }
-
-        [Fact]
-        public void RequestAvailableNurse_DefaultNurseService_ReturnsFirstAvailableNurseId()
-        {
-            // Arrange
-            var triageRepositoryMock = new Mock<ITriageRepository>();
-            var triageParametersRepositoryMock = new Mock<ITriageParametersRepository>();
-            var stateServiceMock = new Mock<IStateManagementService>();
+            var availabilityProperty = nurses?[0]?.GetType().GetProperty("Availability_Status");
+            availabilityProperty?.SetValue(nurses?[0], false);
+            availabilityProperty?.SetValue(nurses?[1], false);
+            availabilityProperty?.SetValue(nurses?[2], false);
 
             var service = new TriageService(
                 triageRepositoryMock.Object,
                 triageParametersRepositoryMock.Object,
-                new NurseService(),
+                nurseService,
                 stateServiceMock.Object);
 
             // Act
-            var result = service.RequestAvailableNurse();
+            var exception = Assert.Throws<InvalidOperationException>(() => service.CreateTriage(52, parameters));
 
             // Assert
-            Assert.Equal(2, result);
+            Assert.Equal("No available nurse.", exception.Message);
+            triageRepositoryMock.Verify(repository => repository.Add(It.IsAny<Triage>()), Times.Never);
+            triageParametersRepositoryMock.Verify(repository => repository.Add(It.IsAny<Triage_Parameters>()), Times.Never);
+            stateServiceMock.Verify(service => service.ChangeVisitStatus(It.IsAny<int>(), It.IsAny<string>()), Times.Never);
         }
 
         [Fact]

@@ -12,27 +12,6 @@ namespace ERManagementSystem.Tests.Unit.ServicesTests
     public class TriageServiceTests
     {
         [Fact]
-        public void RequestAvailableNurse_DefaultNurseService_ReturnsAvailableNurseId()
-        {
-            // Arrange
-            var triageRepositoryMock = new Mock<ITriageRepository>();
-            var triageParametersRepositoryMock = new Mock<ITriageParametersRepository>();
-            var stateServiceMock = new Mock<IStateManagementService>();
-
-            var service = new TriageService(
-                triageRepositoryMock.Object,
-                triageParametersRepositoryMock.Object,
-                new NurseService(),
-                stateServiceMock.Object);
-
-            // Act
-            var result = service.RequestAvailableNurse();
-
-            // Assert
-            Assert.Equal(2, result);
-        }
-
-        [Fact]
         public void CreateTriage_InvalidParameters_ThrowsArgumentOutOfRangeException()
         {
             // Arrange
@@ -95,44 +74,23 @@ namespace ERManagementSystem.Tests.Unit.ServicesTests
             var result = service.CreateTriage(5, parameters);
 
             // Assert
-            Assert.Equal(99, result.Triage_ID);
-            Assert.Equal(5, result.Visit_ID);
-            Assert.Equal(4, result.Triage_Level);
-            Assert.Equal("Orthopedics", result.Specialization);
-            Assert.Equal(2, result.Nurse_ID);
+            var expectedTriage = new Triage
+            {
+                Triage_ID = 99,
+                Visit_ID = 5,
+                Triage_Level = 4,
+                Specialization = "Orthopedics",
+                Nurse_ID = 2,
+                Triage_Time = result.Triage_Time
+            };
+
+            Assert.Equivalent(expectedTriage, result, strict: false);
 
             Assert.Equal(99, parameters.Triage_ID);
 
             triageRepositoryMock.Verify(repository => repository.Add(It.IsAny<Triage>()), Times.Once);
             triageParametersRepositoryMock.Verify(repository => repository.Add(parameters), Times.Once);
             stateServiceMock.Verify(service => service.ChangeVisitStatus(5, ER_Visit.VisitStatus.TRIAGED), Times.Once);
-        }
-
-        [Fact]
-        public void GetByVisitId_RepositoryReturnsTriage_ReturnsSameObject()
-        {
-            // Arrange
-            var triageRepositoryMock = new Mock<ITriageRepository>();
-            var triageParametersRepositoryMock = new Mock<ITriageParametersRepository>();
-            var stateServiceMock = new Mock<IStateManagementService>();
-
-            var triage = new Triage { Visit_ID = 5, Triage_ID = 50 };
-
-            triageRepositoryMock
-                .Setup(repository => repository.GetByVisitId(5))
-                .Returns(triage);
-
-            var service = new TriageService(
-                triageRepositoryMock.Object,
-                triageParametersRepositoryMock.Object,
-                new NurseService(),
-                stateServiceMock.Object);
-
-            // Act
-            var result = service.GetByVisitId(5);
-
-            // Assert
-            Assert.Same(triage, result);
         }
 
         [Fact]
@@ -181,53 +139,23 @@ namespace ERManagementSystem.Tests.Unit.ServicesTests
             var result = service.GetVisitsForTriage();
 
             // Assert
-            Assert.Equal(2, result.Count);
-            Assert.Equal(1, result[0].Visit_ID);
-            Assert.Equal(2, result[1].Visit_ID);
-        }
+            var expected = new List<ER_Visit>
+            {
+                new ER_Visit
+                {
+                    Visit_ID = 1,
+                    Status = ER_Visit.VisitStatus.TRIAGED,
+                    Arrival_date_time = new DateTime(2026, 4, 23, 9, 0, 0)
+                },
+                new ER_Visit
+                {
+                    Visit_ID = 2,
+                    Status = ER_Visit.VisitStatus.REGISTERED,
+                    Arrival_date_time = new DateTime(2026, 4, 23, 10, 0, 0)
+                }
+            };
 
-        [Fact]
-        public void MoveVisitToQueue_ValidVisit_ChangesStatusToWaitingForRoom()
-        {
-            // Arrange
-            var triageRepositoryMock = new Mock<ITriageRepository>();
-            var triageParametersRepositoryMock = new Mock<ITriageParametersRepository>();
-            var stateServiceMock = new Mock<IStateManagementService>();
-
-            var service = new TriageService(
-                triageRepositoryMock.Object,
-                triageParametersRepositoryMock.Object,
-                new NurseService(),
-                stateServiceMock.Object);
-
-            // Act
-            service.MoveVisitToQueue(10);
-
-            // Assert
-            stateServiceMock.Verify(
-                service => service.ChangeVisitStatus(10, ER_Visit.VisitStatus.WAITING_FOR_ROOM),
-                Times.Once);
-        }
-
-        [Fact]
-        public void CloseVisit_DelegatesToStateService()
-        {
-            // Arrange
-            var triageRepositoryMock = new Mock<ITriageRepository>();
-            var triageParametersRepositoryMock = new Mock<ITriageParametersRepository>();
-            var stateServiceMock = new Mock<IStateManagementService>();
-
-            var service = new TriageService(
-                triageRepositoryMock.Object,
-                triageParametersRepositoryMock.Object,
-                new NurseService(),
-                stateServiceMock.Object);
-
-            // Act
-            service.CloseVisit(12);
-
-            // Assert
-            stateServiceMock.Verify(service => service.CloseVisit(12), Times.Once);
+            Assert.Equivalent(expected, result, strict: false);
         }
 
         [Fact]

@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RunSettings>
+  <DataCollectionRunSettings>
+    <DataCollectors>
+      <DataCollector friendlyName="XPlat Code Coverage">
+        <Configuration>
+          <Format>cobertura</Format>
+          <ExcludeByFile>
+            **/obj/**
+            **/bin/**
+            **/*.g.cs
+            **/*.g.i.cs
+            **/*GlobalUsings.g.cs
+            **/*AssemblyInfo.cs
+            **/.NETCoreApp,Version=*.AssemblyAttributes.cs
+          </ExcludeByFile>
+          <Exclude>
+            [ERManagementSystem]*.Views.*
+            [ERManagementSystem]*.ViewModels.*
+            [ERManagementSystem]*.Helpers.*Converter*
+            [ERManagementSystem]*.App
+            [ERManagementSystem]*.MainWindow
+            [ERManagementSystem]*.DataAccess.*
+            [ERManagementSystem]*.Repositories.*
+            [ERManagementSystem.Core]*.Models.ExaminationSummaryDTO
+            [ERManagementSystem.Core]*.Models.QueueItemDisplay
+          </Exclude>
+        </Configuration>
+      </DataCollector>
+    </DataCollectors>
+  </DataCollectionRunSettings>
+</RunSettings>

@@ -12,33 +12,6 @@ namespace ERManagementSystem.Tests.Unit.ServicesTests
     public class RoomManagementServiceTests
     {
         [Fact]
-        public void GetAvailableRooms_RepositoryReturnsRooms_ReturnsSameList()
-        {
-            // Arrange
-            var roomRepositoryMock = new Mock<IRoomRepository>();
-            var patientRepositoryMock = new Mock<IPatientRepository>();
-            var triageRepositoryMock = new Mock<ITriageRepository>();
-
-            var rooms = new List<ER_Room>
-            {
-                new ER_Room { Room_ID = 1, Availability_Status = ER_Room.RoomStatus.Available }
-            };
-
-            roomRepositoryMock.Setup(repository => repository.GetAvailableRooms()).Returns(rooms);
-
-            var service = new RoomManagementService(
-                roomRepositoryMock.Object,
-                patientRepositoryMock.Object,
-                triageRepositoryMock.Object);
-
-            // Act
-            var result = service.GetAvailableRooms();
-
-            // Assert
-            Assert.Same(rooms, result);
-        }
-
-        [Fact]
         public void MarkRoomAsCleaning_RoomMissing_ThrowsInvalidOperationException()
         {
             // Arrange

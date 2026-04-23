@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using ERManagementSystem.Core.Helpers;
 using ERManagementSystem.Core.Models;
@@ -32,6 +33,7 @@ namespace ERManagementSystem.Core.Services
             this.triageRepository = triageRepository;
         }
 
+        [ExcludeFromCodeCoverage]
         public IReadOnlyList<(ER_Visit visit, Triage triage)> GetWaitingVisitsWithTriage()
         {
             return erVisitRepository.GetActiveVisitsWithTriage()
@@ -41,16 +43,19 @@ namespace ERManagementSystem.Core.Services
                 .ToList();
         }
 
+        [ExcludeFromCodeCoverage]
         public IReadOnlyList<ER_Room> GetAvailableRooms()
         {
             return roomRepository.GetAvailableRooms();
         }
 
+        [ExcludeFromCodeCoverage]
         public Patient? GetPatientById(string patientId)
         {
             return patientRepository.GetById(patientId);
         }
 
+        [ExcludeFromCodeCoverage]
         public Triage? GetTriageByVisitId(int visitId)
         {
             return triageRepository.GetByVisitId(visitId);

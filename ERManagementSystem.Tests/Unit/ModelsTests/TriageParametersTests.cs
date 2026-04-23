@@ -68,6 +68,76 @@ namespace ERManagementSystem.Tests.Unit.ModelsTests
         }
 
         [Fact]
+        public void ValidateParameters_BleedingOutOfRange_ThrowsArgumentOutOfRangeException()
+        {
+            // Arrange
+            var parameters = new Triage_Parameters
+            {
+                Consciousness = 1,
+                Breathing = 1,
+                Bleeding = 0,
+                Injury_Type = 1,
+                Pain_Level = 1
+            };
+
+            // Act
+            var exception = Assert.Throws<ArgumentOutOfRangeException>(() => parameters.ValidateParameters());
+
+            // Assert
+            Assert.Equal("Bleeding", exception.ParamName);
+        }
+
+        [Fact]
+        public void ValidateParameters_InjuryTypeOutOfRange_ThrowsArgumentOutOfRangeException()
+        {
+            // Arrange
+            var parameters = new Triage_Parameters
+            {
+                Consciousness = 1,
+                Breathing = 1,
+                Bleeding = 1,
+                Injury_Type = 4,
+                Pain_Level = 1
+            };
+
+            // Act
+            var exception = Assert.Throws<ArgumentOutOfRangeException>(() => parameters.ValidateParameters());
+
+            // Assert
+            Assert.Equal("Injury_Type", exception.ParamName);
+        }
+
+        [Fact]
+        public void ValidateParameters_PainLevelOutOfRange_ThrowsArgumentOutOfRangeException()
+        {
+            // Arrange
+            var parameters = new Triage_Parameters
+            {
+                Consciousness = 1,
+                Breathing = 1,
+                Bleeding = 1,
+                Injury_Type = 1,
+                Pain_Level = 4
+            };
+
+            // Act
+            var exception = Assert.Throws<ArgumentOutOfRangeException>(() => parameters.ValidateParameters());
+
+            // Assert
+            Assert.Equal("Pain_Level", exception.ParamName);
+        }
+
+        [Fact]
+        public void Constructor_AllValuesInRange_DoesNotThrow()
+        {
+            // Arrange / Act
+            var exception = Record.Exception(() => new Triage_Parameters(1, 1, 2, 3, 2, 1));
+
+            // Assert
+            Assert.Null(exception);
+        }
+
+        [Fact]
         public void Constructor_InvalidPainLevel_ThrowsArgumentOutOfRangeException()
         {
             // Arrange / Act

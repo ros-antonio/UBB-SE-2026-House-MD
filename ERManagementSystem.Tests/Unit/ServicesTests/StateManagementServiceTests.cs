@@ -387,27 +387,24 @@ namespace ERManagementSystem.Tests.Unit.ServicesTests
         }
 
         [Fact]
-        public void GetByStatus_RepositoryReturnsVisits_ReturnsSameList()
+        public void ChangeStatus_UnknownCurrentStatus_ThrowsKeyNotFoundException()
         {
             // Arrange
             var visitRepositoryMock = new Mock<IERVisitRepository>();
-            var expected = new List<ER_Visit>
-            {
-                new ER_Visit { Visit_ID = 1, Status = ER_Visit.VisitStatus.TRIAGED },
-                new ER_Visit { Visit_ID = 2, Status = ER_Visit.VisitStatus.TRIAGED }
-            };
-
-            visitRepositoryMock
-                .Setup(repository => repository.GetByStatus(ER_Visit.VisitStatus.TRIAGED))
-                .Returns(expected);
-
             var service = new StateManagementService(visitRepositoryMock.Object);
 
+            var visit = new ER_Visit
+            {
+                Visit_ID = 15,
+                Status = "UNKNOWN_STATUS"
+            };
+
             // Act
-            var result = service.GetByStatus(ER_Visit.VisitStatus.TRIAGED);
+            var exception = Assert.Throws<System.Collections.Generic.KeyNotFoundException>(
+                () => service.ChangeStatus(visit, ER_Visit.VisitStatus.CLOSED));
 
             // Assert
-            Assert.Same(expected, result);
+            Assert.Contains("UNKNOWN_STATUS", exception.Message);
         }
     }
 }

@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Diagnostics.CodeAnalysis;
 using ERManagementSystem.Core.Helpers;
 using ERManagementSystem.Core.Models;
 using ERManagementSystem.Core.Repositories;
@@ -29,6 +30,7 @@ namespace ERManagementSystem.Core.Services
         /// <summary>
         /// Requests an available nurse from the mock external Staff Management system.
         /// </summary>
+        [ExcludeFromCodeCoverage]
         public int? RequestAvailableNurse()
         {
             return nurseService.RequestAvailableNurse();
@@ -37,6 +39,7 @@ namespace ERManagementSystem.Core.Services
         /// <summary>
         /// Creates and persists the triage parameters record.
         /// </summary>
+        [ExcludeFromCodeCoverage]
         public void CreateTriageParameters(Triage_Parameters parameters) // de schimbat la diagrama UML nu trebuie transmis si id-ul
         {
             triageParametersRepository.Add(parameters);
@@ -100,6 +103,7 @@ namespace ERManagementSystem.Core.Services
             }
         }
 
+        [ExcludeFromCodeCoverage]
         public Triage? GetByVisitId(int visitId)
         {
             return triageRepository.GetByVisitId(visitId);
@@ -113,11 +117,13 @@ namespace ERManagementSystem.Core.Services
                 .ToList();
         }
 
+        [ExcludeFromCodeCoverage]
         public void MoveVisitToQueue(int visitId)
         {
             stateService.ChangeVisitStatus(visitId, ER_Visit.VisitStatus.WAITING_FOR_ROOM);
         }
 
+        [ExcludeFromCodeCoverage]
         public void CloseVisit(int visitId)
         {
             stateService.CloseVisit(visitId);

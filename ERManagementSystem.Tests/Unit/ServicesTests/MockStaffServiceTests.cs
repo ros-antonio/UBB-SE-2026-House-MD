@@ -37,9 +37,14 @@ namespace ERManagementSystem.Tests.Unit.ServicesTests
             var result = service.GetDoctorByID(105);
 
             // Assert
-            Assert.Equal(105, result.DoctorID);
-            Assert.Equal("Dr. Taylor", result.Name);
-            Assert.Equal("Pulmonology", result.Specialty);
+            var expectedDoctor = new ERManagementSystem.Core.Models.Doctor
+            {
+                DoctorID = 105,
+                Name = "Dr. Taylor",
+                Specialty = "Pulmonology"
+            };
+
+            Assert.Equivalent(expectedDoctor, result, strict: true);
         }
 
         [Fact]
@@ -52,9 +57,14 @@ namespace ERManagementSystem.Tests.Unit.ServicesTests
             var result = service.GetDoctorByID(999);
 
             // Assert
-            Assert.Equal(0, result.DoctorID);
-            Assert.Equal("Unknown", result.Name);
-            Assert.Equal("Unknown", result.Specialty);
+            var expectedDoctor = new ERManagementSystem.Core.Models.Doctor
+            {
+                DoctorID = 0,
+                Name = "Unknown",
+                Specialty = "Unknown"
+            };
+
+            Assert.Equivalent(expectedDoctor, result, strict: true);
         }
     }
 }

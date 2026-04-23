@@ -1,5 +1,8 @@
+using System.Diagnostics.CodeAnalysis;
+
 namespace ERManagementSystem.Core.Models
 {
+    [ExcludeFromCodeCoverage]
     public class TransferEligibleVisit
     {
         public int VisitId { get; set; }

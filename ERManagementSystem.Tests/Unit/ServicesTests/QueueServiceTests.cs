@@ -116,7 +116,16 @@ namespace ERManagementSystem.Tests.Unit.ServicesTests
             service.RemoveFromQueue(visitId);
 
             // Assert
-            Assert.Equal(ER_Visit.VisitStatus.IN_ROOM, visit.Status);
+            var expectedVisit = new ER_Visit
+            {
+                Visit_ID = visitId,
+                Patient_ID = "P10",
+                Arrival_date_time = new DateTime(2026, 4, 22, 8, 0, 0),
+                Chief_Complaint = "Pain",
+                Status = ER_Visit.VisitStatus.IN_ROOM
+            };
+
+            Assert.Equivalent(expectedVisit, visit, strict: true);
 
             repositoryMock.Verify(
                 repository => repository.UpdateStatus(visitId, ER_Visit.VisitStatus.IN_ROOM),

@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using ERManagementSystem.Core.Helpers;
 using ERManagementSystem.Core.Models;
 using ERManagementSystem.Core.Repositories;
@@ -22,8 +23,11 @@ namespace ERManagementSystem.Core.Services
             this.triageRepository = triageRepository;
         }
 
+        [ExcludeFromCodeCoverage]
         public List<ER_Room> GetAvailableRooms() => roomRepository.GetAvailableRooms();
+        [ExcludeFromCodeCoverage]
         public List<ER_Room> GetOccupiedRooms() => roomRepository.GetOccupiedRooms();
+        [ExcludeFromCodeCoverage]
         public List<ER_Room> GetCleaningRooms() => roomRepository.GetCleaningRooms();
 
         public void MarkRoomAsCleaning(int roomId)

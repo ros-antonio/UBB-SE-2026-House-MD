@@ -73,13 +73,19 @@ namespace ERManagementSystem.Tests.Unit.ServicesTests
             visitRepositoryMock.Verify(repository => repository.Add(It.IsAny<ER_Visit>()), Times.Once);
 
             Assert.NotNull(addedVisit);
-            Assert.Equal(patient.Patient_ID, addedVisit!.Patient_ID);
-            Assert.Equal("Chest pain", addedVisit.Chief_Complaint);
-            Assert.Equal(ER_Visit.VisitStatus.REGISTERED, addedVisit.Status);
 
-            Assert.Equal(patient.Patient_ID, result.Patient_ID);
-            Assert.Equal("Chest pain", result.Chief_Complaint);
-            Assert.Equal(ER_Visit.VisitStatus.REGISTERED, result.Status);
+            var expectedVisit = new ER_Visit
+            {
+                Patient_ID = patient.Patient_ID,
+                Chief_Complaint = "Chest pain",
+                Status = ER_Visit.VisitStatus.REGISTERED,
+                Arrival_date_time = addedVisit!.Arrival_date_time
+            };
+
+            Assert.Equivalent(expectedVisit, addedVisit, strict: false);
+
+            expectedVisit.Arrival_date_time = result.Arrival_date_time;
+            Assert.Equivalent(expectedVisit, result, strict: false);
         }
 
         [Fact]
@@ -128,10 +134,16 @@ namespace ERManagementSystem.Tests.Unit.ServicesTests
             var result = service.RegisterPatientAndVisit(patient, "Broken arm");
 
             // Assert
-            Assert.Equal(patient.Patient_ID, result.Patient_ID);
-            Assert.Equal("Broken arm", result.Chief_Complaint);
-            Assert.Equal(ER_Visit.VisitStatus.REGISTERED, result.Status);
+            var expectedVisit = new ER_Visit
+            {
+                Patient_ID = patient.Patient_ID,
+                Chief_Complaint = "Broken arm",
+                Status = ER_Visit.VisitStatus.REGISTERED,
+                Arrival_date_time = result.Arrival_date_time
+            };
+
             Assert.NotEqual(default, result.Arrival_date_time);
+            Assert.Equivalent(expectedVisit, result, strict: false);
         }
 
         [Fact]

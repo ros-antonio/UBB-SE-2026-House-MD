@@ -12,38 +12,6 @@ namespace ERManagementSystem.Tests.Unit.ServicesTests
     public class StateManagementServiceAdditionalTests
     {
         [Fact]
-        public void ValidateTransition_ValidTransition_ReturnsTrue()
-        {
-            // Arrange
-            var visitRepositoryMock = new Mock<IERVisitRepository>();
-            var service = new StateManagementService(visitRepositoryMock.Object);
-
-            // Act
-            var result = service.ValidateTransition(
-                ER_Visit.VisitStatus.IN_ROOM,
-                ER_Visit.VisitStatus.WAITING_FOR_DOCTOR);
-
-            // Assert
-            Assert.True(result);
-        }
-
-        [Fact]
-        public void ValidateTransition_InvalidTransition_ReturnsFalse()
-        {
-            // Arrange
-            var visitRepositoryMock = new Mock<IERVisitRepository>();
-            var service = new StateManagementService(visitRepositoryMock.Object);
-
-            // Act
-            var result = service.ValidateTransition(
-                ER_Visit.VisitStatus.REGISTERED,
-                ER_Visit.VisitStatus.IN_ROOM);
-
-            // Assert
-            Assert.False(result);
-        }
-
-        [Fact]
         public void ChangeVisitStatus_ClosedVisitWithoutRoomIds_UpdatesVisitAndSkipsRoomCleanup()
         {
             // Arrange

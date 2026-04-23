@@ -1,7 +1,9 @@
 using System;
+using System.Diagnostics.CodeAnalysis;
 
 namespace ERManagementSystem.Core.Models
 {
+    [ExcludeFromCodeCoverage]
     public class ExaminationSummaryDTO
     {
         // Patient Info

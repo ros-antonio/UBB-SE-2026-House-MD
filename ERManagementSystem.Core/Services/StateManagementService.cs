@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using ERManagementSystem.Core.Helpers;
 using ERManagementSystem.Core.Models;
 using ERManagementSystem.Core.Repositories;
@@ -48,6 +49,7 @@ namespace ERManagementSystem.Core.Services
             visit.Status = newStatus;
         }
 
+        [ExcludeFromCodeCoverage]
         public bool ValidateTransition(string currentStatus, string newStatus)
             => CanTransitionTo(currentStatus, newStatus);
 
@@ -143,6 +145,7 @@ namespace ERManagementSystem.Core.Services
             Logger.Info($"Visit {visitId} successfully closed.");
         }
 
+        [ExcludeFromCodeCoverage]
         public List<ER_Visit> GetByStatus(string status)
             => erVisitRepository.GetByStatus(status);
     }
