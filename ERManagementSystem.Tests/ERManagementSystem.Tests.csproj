@@ -29,8 +29,6 @@
   <ItemGroup>
     <Folder Include="Integration\DataAccessTests\" />
     <Folder Include="Integration\RepositoriesTests\" />
-    <Folder Include="Unit\HelpersTests\" />
-    <Folder Include="Unit\ViewModelsTests\" />
   </ItemGroup>
 
   <ItemGroup>
