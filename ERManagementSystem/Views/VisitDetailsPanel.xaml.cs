@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using ERManagementSystem.Models;
+using ERManagementSystem.Services;
 using Microsoft.UI;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
@@ -88,55 +89,8 @@ namespace ERManagementSystem.Views
                 TriageCard.Visibility = Visibility.Collapsed;
             }
 
-            // Timeline
-            TimelineItems.ItemsSource = BuildTimeline(visit.Status);
-        }
-
-        // ─────────────────────────────────────────────
-        // Timeline builder.
-        // ─────────────────────────────────────────────
-        private static List<TimelineItem> BuildTimeline(string currentStatus)
-        {
-            var states = new[]
-            {
-                ER_Visit.VisitStatus.REGISTERED,
-                ER_Visit.VisitStatus.TRIAGED,
-                ER_Visit.VisitStatus.WAITING_FOR_ROOM,
-                ER_Visit.VisitStatus.IN_ROOM,
-                ER_Visit.VisitStatus.WAITING_FOR_DOCTOR,
-                ER_Visit.VisitStatus.IN_EXAMINATION,
-                ER_Visit.VisitStatus.TRANSFERRED,
-                ER_Visit.VisitStatus.CLOSED
-            };
-
-            bool passedCurrent = false;
-            var items = new List<TimelineItem>();
-
-            foreach (var state in states)
-            {
-                bool isCurrent = state == currentStatus;
-                bool isPast = !passedCurrent && !isCurrent;
-
-                items.Add(new TimelineItem
-                {
-                    Label = state.Replace("_", " "),
-                    DotColor = isCurrent ? new SolidColorBrush(Colors.DodgerBlue)
-                                    : isPast ? new SolidColorBrush(Colors.Gray)
-                                                : new SolidColorBrush(Colors.LightGray),
-                    TextColor = isCurrent ? new SolidColorBrush(Colors.DodgerBlue)
-                                    : isPast ? new SolidColorBrush(Colors.Gray)
-                                                : new SolidColorBrush(Colors.LightGray),
-                    Weight = isCurrent ? "Bold" : "Normal",
-                    BadgeVisibility = isCurrent ? Visibility.Visible : Visibility.Collapsed
-                });
-
-                if (isCurrent)
-                {
-                    passedCurrent = true;
-                }
-            }
-
-            return items;
+            // Timeline - now delegated to service
+            TimelineItems.ItemsSource = VisitTimelineService.BuildTimeline(visit.Status);
         }
 
         // ─────────────────────────────────────────────
